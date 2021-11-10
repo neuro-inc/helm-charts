@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "postgres-db-init.fullname" . }}
+  labels: {{ include "postgres-db-init.labels.standard" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+    "helm.sh/hook-weight": {{ sub (.Values.hookWeight | default -1) 1 | quote }}
+data:
+{{ (.Files.Glob "files/*").AsConfig | indent 2 }}

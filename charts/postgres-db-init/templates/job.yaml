@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "postgres-db-init.fullname" . }}
+  labels: {{ include "postgres-db-init.labels.standard" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+    "helm.sh/hook-weight": {{ .Values.hookWeight | default -1 | quote }}
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: postgres-db-init
+          configMap:
+            name: {{ include "postgres-db-init.fullname" . }}
+            defaultMode: 0777
+      {{- if .Values.migrations.enabled }}
+      initContainers:
+      {{- else }}
+      containers:
+      {{- end }}
+        - name: create-users
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          command:
+            - bash
+            - -c
+            - |
+              /var/lib/postgres_db_init/init_db.sh \
+                --schema "{{ .Values.schema }}" \
+                -a "$NP_ADMIN_DSN" \
+                -m "$NP_MIGRATIONS_RUNNER_DSN" \
+                -s "$NP_SERVICE_DSN"
+          volumeMounts:
+            - name: postgres-db-init
+              mountPath: /var/lib/postgres_db_init
+          env:
+            - name: NP_ADMIN_DSN
+{{- if .Values.adminDsn }}
+{{ toYaml .Values.adminDsn | indent 14 }}
+{{- end }}
+            - name: NP_MIGRATIONS_RUNNER_DSN
+{{- if .Values.migrationsRunnerDsn }}
+{{ toYaml .Values.migrationsRunnerDsn | indent 14 }}
+{{- end }}
+            - name: NP_SERVICE_DSN
+{{- if .Values.serviceDsn }}
+{{ toYaml .Values.serviceDsn | indent 14 }}
+{{- end }}
+      {{- if .Values.migrations.enabled }}
+      containers:
+        - name: run-migrations
+          image: {{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}
+          {{- with .Values.migrations.command }}
+          command: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.migrations.args }}
+          args: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.migrations.env }}
+          env: {{ toYaml . | nindent 12 }}
+          {{- end }}
+      {{- end }}

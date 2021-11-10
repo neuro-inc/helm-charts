@@ -1,0 +1,23 @@
+{{- range .Values.persistence }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "nfs-server.fullname" $ }}-{{ include "nfs-server.claimNameSuffix" .name }}
+  labels:
+    app: {{ template "nfs-server.name" $ }}
+    chart: {{ template "nfs-server.chart" $ }}
+    heritage: {{ $.Release.Service }}
+    release: {{ $.Release.Name }}
+spec:
+  accessModes: [ {{ .accessMode | quote }} ]
+  {{- if .storageClass }}
+  {{- if (eq "-" .storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: {{ .storageClass | quote }}
+  {{- end }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .size | quote }}
+{{- end }}

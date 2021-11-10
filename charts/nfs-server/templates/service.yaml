@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "nfs-server.fullname" . }}
+  labels:
+    app: {{ template "nfs-server.name" . }}
+    chart: {{ template "nfs-server.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if and (eq .Values.service.type "ClusterIP") .Values.service.clusterIP }}
+  clusterIP: {{ .Values.service.clusterIP }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.service.nfsPort }}
+      targetPort: nfs
+      protocol: TCP
+      name: nfs
+      {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.nfsNodePort))) }}
+      nodePort: {{ .Values.service.nfsNodePort }}
+      {{- end }}
+    - port: {{ .Values.service.nfsPort }}
+      targetPort: nfs-udp
+      protocol: UDP
+      name: nfs-udp
+      {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.nfsNodePort))) }}
+      nodePort: {{ .Values.service.nfsNodePort }}
+      {{- end }}
+    - port: {{ .Values.service.mountdPort }}
+      targetPort: mountd
+      protocol: TCP
+      name: mountd
+      {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.mountdNodePort))) }}
+      nodePort: {{ .Values.service.mountdNodePort }}
+      {{- end }}
+    - port: {{ .Values.service.mountdPort }}
+      targetPort: mountd-udp
+      protocol: UDP
+      name: mountd-udp
+      {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.mountdNodePort))) }}
+      nodePort: {{ .Values.service.mountdNodePort }}
+      {{- end }}
+    - port: {{ .Values.service.rpcbindPort }}
+      targetPort: rpcbind
+      protocol: TCP
+      name: rpcbind
+      {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.rpcbindNodePort))) }}
+      nodePort: {{ .Values.service.rpcbindNodePort }}
+      {{- end }}
+    - port: {{ .Values.service.rpcbindPort }}
+      targetPort: rpcbind-udp
+      protocol: UDP
+      name: rpcbind-udp
+      {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.rpcbindNodePort))) }}
+      nodePort: {{ .Values.service.rpcbindNodePort }}
+      {{- end }}
+  {{- if .Values.service.externalIPs }}
+  externalIPs:
+    {{- toYaml .Values.service.externalIPs | nindent 4 }}
+  {{- end }}
+  selector:
+    app: {{ template "nfs-server.name" . }}
+    release: {{ .Release.Name }}

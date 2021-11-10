@@ -1,0 +1,45 @@
+replicas: 1
+
+# imagePullSecrets: []
+
+image:
+  repository: k8s.gcr.io/volume-nfs
+  tag: 0.8
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  # clusterIP: 10.100.104.98
+  nfsPort: 2049
+  mountdPort: 20048
+  rpcbindPort: 111
+
+  externalIPs: []
+
+persistence: []
+  # - name:
+  #   exportPath: /_default
+  #   storageClass:
+  #   accessMode: ReadWriteOnce
+  #   size: 200Gi
+
+rbac:
+  create: false
+
+  ## Ignored if rbac.create is true
+  ##
+  serviceAccountName: default
+
+resources:
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

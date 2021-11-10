@@ -1,0 +1,25 @@
+image:
+  repository: bitnami/postgresql
+  tag: 11.10.0-debian-10-r0
+
+hookWeight: -1
+
+schema: public
+
+adminDsn: {}
+migrationsRunnerDsn: {}
+serviceDsn: {}
+
+migrations:
+  enabled: false
+
+  image:
+    repository:
+    tag:
+
+  command: []
+  args: []
+
+  env: []
+
+secret: {}
