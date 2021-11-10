@@ -2,4 +2,4 @@ apiVersion: v1
 version: 1.1.0
 appVersion: 1.1.0
 name: postgres-db-init
-description: Deploy PostgreSQL DB initialization script
+description: PostgreSQL DB initialization script
