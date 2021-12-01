@@ -18,12 +18,12 @@ service:
 
   externalIPs: []
 
-persistence: []
-  # - name:
-  #   exportPath: /_default
-  #   storageClass:
-  #   accessMode: ReadWriteOnce
-  #   size: 200Gi
+persistence:
+- name:
+  mountPath: /exports
+  storageClass:
+  accessMode: ReadWriteOnce
+  size: 200Gi
 
 rbac:
   create: false

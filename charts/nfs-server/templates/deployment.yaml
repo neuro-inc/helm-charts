@@ -30,8 +30,7 @@ spec:
       terminationGracePeriodSeconds: 100
       serviceAccountName: {{ if .Values.rbac.create }}{{ template "nfs-server.fullname" . }}{{ else }}{{ .Values.rbac.serviceAccountName | quote }}{{ end }}
       {{- if .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      imagePullSecrets: {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -95,25 +94,21 @@ spec:
           volumeMounts:
             {{- range $index, $data := .Values.persistence }}
             - name: data-{{ $index }}
-              mountPath: /exports{{ $data.exportPath }}
+              mountPath: {{ $data.mountPath }}
             {{- end }}
           {{- end }}
 
           {{- with .Values.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
+          resources: {{- toYaml . | nindent 12 }}
           {{- end }}
       {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
+      affinity: {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
+      tolerations: {{- toYaml . | nindent 8 }}
       {{- end }}
 
       {{- if .Values.persistence }}
