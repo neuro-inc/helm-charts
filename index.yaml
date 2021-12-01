@@ -3,6 +3,15 @@ entries:
   nfs-server:
   - apiVersion: v1
     appVersion: "0.8"
+    created: "2021-12-01T10:35:07.707935223Z"
+    description: In-cluster kubernetes NFS server.
+    digest: 1cac514f593d6f4cf23491182ec1aea41d3409345f444169a3e67ba5dfde703b
+    name: nfs-server
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/nfs-server-1.4/nfs-server-1.4.tgz
+    version: "1.4"
+  - apiVersion: v1
+    appVersion: "0.8"
     created: "2021-11-10T10:52:01.366887639Z"
     description: In-cluster kubernetes NFS server.
     digest: ab24657333e17e8aa457bb11cf6e3b2a1c64ea8a0a08c92e6faea409397bbc47
@@ -20,4 +29,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-1.1.0/postgres-db-init-1.1.0.tgz
     version: 1.1.0
-generated: "2021-11-10T10:52:01.545816861Z"
+generated: "2021-12-01T10:35:07.707943923Z"
