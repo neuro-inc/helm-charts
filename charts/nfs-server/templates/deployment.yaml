@@ -36,7 +36,9 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.args }}
           args: {{ toYaml .Values.args | nindent 10 }}
+          {{- end }}
           ports:
             - name: nfs
               containerPort: 2049

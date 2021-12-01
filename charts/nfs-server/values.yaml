@@ -7,7 +7,7 @@ image:
   tag: 0.8
   pullPolicy: IfNotPresent
 
-args: ["/exports", "/"]
+args: []
 
 service:
   type: ClusterIP
