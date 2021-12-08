@@ -1,10 +1,19 @@
 image:
   repository: bitnami/postgresql
-  tag: 11.10.0-debian-10-r0
+  tag: 11.14.0-debian-10-r17
 
+hook: pre-install,pre-upgrade
 hookWeight: -1
 
 schema: public
+
+env: []
+# - name: NP_ADMIN_DSN
+#   value: dsn
+# - name: NP_MIGRATIONS_RUNNER_DSN
+#   value: dsn
+# - name: NP_SERVICE_DSN
+#   value: dsn
 
 adminDsn: {}
 migrationsRunnerDsn: {}

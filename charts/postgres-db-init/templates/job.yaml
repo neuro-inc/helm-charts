@@ -4,7 +4,7 @@ metadata:
   name: {{ include "postgres-db-init.fullname" . }}
   labels: {{ include "postgres-db-init.labels.standard" . | nindent 4 }}
   annotations:
-    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook": {{ .Values.hook }}
     "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
     "helm.sh/hook-weight": {{ .Values.hookWeight | default -1 | quote }}
 spec:
@@ -36,19 +36,9 @@ spec:
           volumeMounts:
             - name: postgres-db-init
               mountPath: /var/lib/postgres_db_init
-          env:
-            - name: NP_ADMIN_DSN
-{{- if .Values.adminDsn }}
-{{ toYaml .Values.adminDsn | indent 14 }}
-{{- end }}
-            - name: NP_MIGRATIONS_RUNNER_DSN
-{{- if .Values.migrationsRunnerDsn }}
-{{ toYaml .Values.migrationsRunnerDsn | indent 14 }}
-{{- end }}
-            - name: NP_SERVICE_DSN
-{{- if .Values.serviceDsn }}
-{{ toYaml .Values.serviceDsn | indent 14 }}
-{{- end }}
+          {{- if .Values.env }}
+          env: {{ toYaml .Values.env | nindent 12 }}
+          {{- end }}
       {{- if .Values.migrations.enabled }}
       containers:
         - name: run-migrations
