@@ -66,9 +66,13 @@ function create_user {
 
 : ${NP_ADMIN_DSN:=""}
 : ${NP_MIGRATIONS_RUNNER_DSN:=""}
+: ${NP_MIGRATIONS_RUNNER_USER:=""}
+: ${NP_MIGRATIONS_RUNNER_PASSWORD:=""}
 : ${NP_SERVICE_DSN:=""}
+: ${NP_SERVICE_USER:=""}
+: ${NP_SERVICE_PASSWORD:=""}
 
-if [ ! -z "$NP_ADMIN_USER_DSN" ]; then
+if [ ! -z "$NP_ADMIN_DSN" ]; then
     export PGUSER="$(get_dsn_user "$NP_ADMIN_DSN")"
     export PGPASSWORD="$(get_dsn_password "$NP_ADMIN_DSN")"
     export PGHOST="$(get_dsn_host "$NP_ADMIN_DSN")"
