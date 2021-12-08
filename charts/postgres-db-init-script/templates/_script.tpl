@@ -75,7 +75,7 @@ if [ ! -z "$NP_ADMIN_USER_DSN" ]; then
     export PGPORT="$(get_dsn_port "$NP_ADMIN_DSN")"
     export PGDATABASE="$(get_dsn_db "$NP_ADMIN_DSN")"
 else
-    export PGUSER="$NP_ADMIN_USER"
+    export PGUSER="${NP_ADMIN_USER:-"postgres"}"
     export PGPASSWORD="$NP_ADMIN_PASSWORD"
     export PGHOST="$NP_POSTGRES_HOST"
     export PGPORT="$NP_POSTGRES_PORT"
