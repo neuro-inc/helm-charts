@@ -8,6 +8,8 @@ hookWeight: -1
 schema: public
 
 env: []
+# - name: NP_SCHEMA
+#   value: public
 # - name: NP_ADMIN_DSN
 #   value: dsn
 # - name: NP_MIGRATIONS_RUNNER_DSN

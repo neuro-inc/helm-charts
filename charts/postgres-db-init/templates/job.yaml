@@ -24,15 +24,7 @@ spec:
       {{- end }}
         - name: create-users
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-          command:
-            - bash
-            - -c
-            - |
-              /var/lib/postgres_db_init/init_db.sh \
-                --schema "{{ .Values.schema }}" \
-                -a "$NP_ADMIN_DSN" \
-                -m "$NP_MIGRATIONS_RUNNER_DSN" \
-                -s "$NP_SERVICE_DSN"
+          command: [/var/lib/postgres_db_init/init_db.sh]
           volumeMounts:
             - name: postgres-db-init
               mountPath: /var/lib/postgres_db_init
