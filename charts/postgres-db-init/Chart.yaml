@@ -5,5 +5,5 @@ name: postgres-db-init
 description: PostgreSQL DB initialization
 dependencies:
 - name: postgres-db-init-script
-  version: 1.0.2
+  version: 1.0.3
   repository: https://neuro-inc.github.io/helm-charts
