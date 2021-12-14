@@ -1,6 +1,6 @@
 dependencies:
 - name: postgres-db-init-script
   repository: https://neuro-inc.github.io/helm-charts
-  version: 1.0.4
-digest: sha256:8e7b5de7475ca4ea44f5fb1e6253faf3e13ff22ac0956aaafba44f0028293d0e
-generated: "2021-12-14T10:18:14.053475+02:00"
+  version: 1.0.5
+digest: sha256:b4c382ad70e79f4b3192d785af033b613d103b19874f006fa2cbcbbad953ff6e
+generated: "2021-12-14T11:38:52.550926+02:00"
