@@ -76,7 +76,7 @@ function create_user {
 if [ -z "$NP_POSTGRES_ADMIN_DSN" ]; then
     export PGUSER="${NP_POSTGRES_ADMIN_USER:-"postgres"}"
     export PGPASSWORD="$NP_POSTGRES_ADMIN_PASSWORD"
-    export PGHOST="${NP_POSTGRES_HOST:=""}"
+    export PGHOST="${NP_POSTGRES_HOST:=""}" # connect using unix socket by default
     export PGPORT="${NP_POSTGRES_PORT:="5432"}"
 else
     export PGUSER="$(get_dsn_user "$NP_POSTGRES_ADMIN_DSN")"
