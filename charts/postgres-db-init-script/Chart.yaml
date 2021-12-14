@@ -1,6 +1,6 @@
 apiVersion: v2
-version: 1.0.3
-appVersion: 1.0.3
+version: 1.0.4
+appVersion: 1.0.4
 type: library
 name: postgres-db-init-script
 description: PostgreSQL DB initialization script
