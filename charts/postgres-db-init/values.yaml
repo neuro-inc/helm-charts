@@ -32,5 +32,6 @@ migrations:
   args: []
 
   env: []
+  imagePullSecrets: []
 
 secret: {}

@@ -31,6 +31,9 @@ spec:
           {{- if .Values.env }}
           env: {{ toYaml .Values.env | nindent 12 }}
           {{- end }}
+          {{- if .Values.imagePullSecrets }}
+          env: {{ toYaml .Values.imagePullSecrets | nindent 12 }}
+          {{- end }}
       {{- if .Values.migrations.enabled }}
       containers:
         - name: run-migrations
@@ -43,5 +46,8 @@ spec:
           {{- end }}
           {{- with .Values.migrations.env }}
           env: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.imagePullSecrets }}
+          env: {{ toYaml .Values.imagePullSecrets | nindent 12 }}
           {{- end }}
       {{- end }}
