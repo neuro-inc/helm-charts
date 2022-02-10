@@ -2,13 +2,15 @@ image:
   repository: bitnami/postgresql
   tag: 11.14.0-debian-10-r17
 
+imagePullSecrets: []
+
 hook: pre-install,pre-upgrade
 hookWeight: -1
 
 schema: public
 
 env: []
-# - name: NP_SCHEMA
+# - name: NP_POSTGRES_SCHEMA
 #   value: public
 # - name: NP_ADMIN_DSN
 #   value: dsn
@@ -32,6 +34,5 @@ migrations:
   args: []
 
   env: []
-  imagePullSecrets: []
 
 secret: {}

@@ -44,10 +44,24 @@ spec:
           {{- with .Values.migrations.args }}
           args: {{ toYaml . | nindent 12 }}
           {{- end }}
+          env:
+          {{- with .Values.adminDsn }}
+            - name: NP_ADMIN_DSN
+              value: {{ toYaml . | indent 16 }}
+          {{- end }}
+          {{- with .Values.migrationsRunnerDsn }}
+            - name: NP_MIGRATIONS_RUNNER_DSN
+              value: {{ toYaml . | indent 16 }}
+          {{- end }}
+          {{- with .Values.serviceDsn }}
+            - name: NP_SERVICE_DSN
+              value: {{ toYaml . | indent 16 }}
+          {{- end }}
+          {{- end }}
           {{- with .Values.migrations.env }}
-          env: {{ toYaml . | nindent 12 }}
+          {{ toYaml . | indent 12 }}
           {{- end }}
-          {{- if .Values.migrations.imagePullSecrets }}
-          imagePullSecrets: {{ toYaml .Values.migrations.imagePullSecrets | nindent 12 }}
-          {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
