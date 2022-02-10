@@ -29,6 +29,10 @@ spec:
             - name: postgres-db-init
               mountPath: /var/lib/postgres_db_init
           env:
+          {{- with .Values.extensions }}
+            - name: NP_EXTENSIONS
+              value: {{ . | join " " | quote }}
+          {{- end }}
           {{- with .Values.adminDsn }}
             - name: NP_ADMIN_DSN
 {{ toYaml . | indent 14 }}

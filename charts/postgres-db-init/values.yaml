@@ -7,7 +7,13 @@ imagePullSecrets: []
 hook: pre-install,pre-upgrade
 hookWeight: -1
 
+extensions: []
+
 schema: public
+
+adminDsn: {}
+migrationsRunnerDsn: {}
+serviceDsn: {}
 
 env: []
 # - name: NP_POSTGRES_SCHEMA
@@ -18,10 +24,6 @@ env: []
 #   value: dsn
 # - name: NP_SERVICE_DSN
 #   value: dsn
-
-adminDsn: {}
-migrationsRunnerDsn: {}
-serviceDsn: {}
 
 migrations:
   enabled: false
