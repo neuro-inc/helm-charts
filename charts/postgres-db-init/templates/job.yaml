@@ -57,11 +57,10 @@ spec:
             - name: NP_SERVICE_DSN
               value: {{ toYaml . | indent 16 }}
           {{- end }}
-          {{- end }}
           {{- with .Values.migrations.env }}
           {{ toYaml . | indent 12 }}
           {{- end }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 8 }}
-      {{- end }}
       {{- end }}
