@@ -28,19 +28,6 @@ spec:
           volumeMounts:
             - name: postgres-db-init
               mountPath: /var/lib/postgres_db_init
-          {{- with .Values.env }}
-          env: {{ toYaml . | nindent 12 }}
-          {{- end }}
-      {{- if .Values.migrations.enabled }}
-      containers:
-        - name: run-migrations
-          image: {{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}
-          {{- with .Values.migrations.command }}
-          command: {{ toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.migrations.args }}
-          args: {{ toYaml . | nindent 12 }}
-          {{- end }}
           env:
           {{- with .Values.adminDsn }}
             - name: NP_ADMIN_DSN
@@ -54,8 +41,21 @@ spec:
             - name: NP_SERVICE_DSN
 {{ toYaml . | indent 14 }}
           {{- end }}
-          {{- with .Values.migrations.env }}
+          {{- with .Values.env }}
 {{ toYaml . | indent 12 }}
+          {{- end }}
+      {{- if .Values.migrations.enabled }}
+      containers:
+        - name: run-migrations
+          image: {{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}
+          {{- with .Values.migrations.command }}
+          command: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.migrations.args }}
+          args: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.migrations.env }}
+          env: {{ toYaml . | nindent 12 }}
           {{- end }}
       {{- end }}
       {{- with .Values.imagePullSecrets }}
