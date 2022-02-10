@@ -28,11 +28,8 @@ spec:
           volumeMounts:
             - name: postgres-db-init
               mountPath: /var/lib/postgres_db_init
-          {{- if .Values.env }}
-          env: {{ toYaml .Values.env | nindent 12 }}
-          {{- end }}
-          {{- if .Values.imagePullSecrets }}
-          env: {{ toYaml .Values.imagePullSecrets | nindent 12 }}
+          {{- with .Values.env }}
+          env: {{ toYaml . | nindent 12 }}
           {{- end }}
       {{- if .Values.migrations.enabled }}
       containers:
@@ -47,18 +44,18 @@ spec:
           env:
           {{- with .Values.adminDsn }}
             - name: NP_ADMIN_DSN
-              value: {{ toYaml . | indent 16 }}
+{{ toYaml . | indent 14 }}
           {{- end }}
           {{- with .Values.migrationsRunnerDsn }}
             - name: NP_MIGRATIONS_RUNNER_DSN
-              value: {{ toYaml . | indent 16 }}
+{{ toYaml . | indent 14 }}
           {{- end }}
           {{- with .Values.serviceDsn }}
             - name: NP_SERVICE_DSN
-              value: {{ toYaml . | indent 16 }}
+{{ toYaml . | indent 14 }}
           {{- end }}
           {{- with .Values.migrations.env }}
-          {{ toYaml . | indent 12 }}
+{{ toYaml . | indent 12 }}
           {{- end }}
       {{- end }}
       {{- with .Values.imagePullSecrets }}

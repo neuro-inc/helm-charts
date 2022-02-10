@@ -1,6 +1,6 @@
 apiVersion: v2
-version: 1.2.10
-appVersion: 1.2.10
+version: 1.2.11
+appVersion: 1.2.11
 name: postgres-db-init
 description: PostgreSQL DB initialization
 dependencies:
