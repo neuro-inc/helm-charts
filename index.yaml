@@ -200,6 +200,16 @@ entries:
     version: 1.1.0
   postgres-db-init-script:
   - apiVersion: v2
+    appVersion: 1.0.7
+    created: "2022-02-10T14:07:26.884008883Z"
+    description: PostgreSQL DB initialization script
+    digest: 90cff2337ce2b66054404fc9b708ce7a144653a65fb65eba3459aa500db9b369
+    name: postgres-db-init-script
+    type: library
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-script-1.0.7/postgres-db-init-script-1.0.7.tgz
+    version: 1.0.7
+  - apiVersion: v2
     appVersion: 1.0.6
     created: "2022-02-10T12:05:25.987224541Z"
     description: PostgreSQL DB initialization script
@@ -269,4 +279,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-script-1.0.0/postgres-db-init-script-1.0.0.tgz
     version: 1.0.0
-generated: "2022-02-10T13:43:06.160123621Z"
+generated: "2022-02-10T14:07:26.884369184Z"
