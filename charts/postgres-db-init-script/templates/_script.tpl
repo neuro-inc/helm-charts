@@ -74,8 +74,8 @@ function create_user {
 : ${NP_SERVICE_DSN:=""}
 : ${NP_SERVICE_USER:=""}
 : ${NP_SERVICE_PASSWORD:=""}
-: ${NP_SCHEMA:="public"}
-: ${NP_EXTENSIONS:=""}
+: ${NP_POSTGRES_SCHEMA:="public"}
+: ${NP_POSTGRES_EXTENSIONS:=""}
 
 if [ -z "$NP_ADMIN_DSN" ]; then
     export PGUSER="${NP_ADMIN_USER:-"postgres"}"
@@ -91,8 +91,8 @@ fi
 
 export PGDATABASE="postgres"
 
-NP_EXTENSIONS=($NP_EXTENSIONS)
-for EXTENSION in "${NP_EXTENSIONS[@]}"; do
+NP_POSTGRES_EXTENSIONS=($NP_POSTGRES_EXTENSIONS)
+for EXTENSION in "${NP_POSTGRES_EXTENSIONS[@]}"; do
     $psql_ -c "CREATE EXTENSION IF NOT EXISTS $EXTENSION;"
 done
 
