@@ -21,6 +21,19 @@ entries:
     version: 1.3.0
   postgres-db-init:
   - apiVersion: v2
+    appVersion: 1.2.8
+    created: "2022-02-10T12:11:12.157949847Z"
+    dependencies:
+    - name: postgres-db-init-script
+      repository: https://neuro-inc.github.io/helm-charts
+      version: 1.0.5
+    description: PostgreSQL DB initialization
+    digest: 592e8587312e31fcec82760287072fe3bb4dd94947f304cf1bd60bbf7dbaf388
+    name: postgres-db-init
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-1.2.8/postgres-db-init-1.2.8.tgz
+    version: 1.2.8
+  - apiVersion: v2
     appVersion: 1.2.7
     created: "2022-02-09T21:21:35.743983074Z"
     dependencies:
@@ -204,4 +217,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-script-1.0.0/postgres-db-init-script-1.0.0.tgz
     version: 1.0.0
-generated: "2022-02-10T12:05:25.987277443Z"
+generated: "2022-02-10T12:11:12.158011751Z"
