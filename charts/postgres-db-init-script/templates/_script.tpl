@@ -91,6 +91,7 @@ fi
 
 export PGDATABASE="postgres"
 
+NP_EXTENSIONS=($NP_EXTENSIONS)
 for EXTENSION in "${NP_EXTENSIONS[@]}"; do
     $psql_ -c "CREATE EXTENSION IF NOT EXISTS $EXTENSION;"
 done
