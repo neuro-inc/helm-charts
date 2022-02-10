@@ -30,7 +30,7 @@ spec:
               mountPath: /var/lib/postgres_db_init
           env:
           {{- with .Values.extensions }}
-            - name: NP_EXTENSIONS
+            - name: NP_POSTGRES_EXTENSIONS
               value: {{ . | join " " | quote }}
           {{- end }}
           {{- with .Values.adminDsn }}
