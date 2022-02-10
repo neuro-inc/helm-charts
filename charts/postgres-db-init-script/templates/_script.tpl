@@ -4,6 +4,9 @@
 set -o errexit
 set -o nounset
 
+# Stop on error and return non zero exit code
+psql_="psql -v ON_ERROR_STOP=1"
+
 function parse_dsn {
     DSN="$1"
     DSN="${DSN#"postgresql://"}"
@@ -39,11 +42,11 @@ function get_dsn_db {
 function create_db {
     DB="$1"
 
-    if [ "$(psql -tAc "SELECT 1 FROM pg_database WHERE datname = '$DB';")" = "1" ]; then
+    if [ "$($psql_ -tAc "SELECT 1 FROM pg_database WHERE datname = '$DB';")" = "1" ]; then
         echo "Database $DB exists"
     else
         echo "Database $DB doesn't exist, creating..."
-        psql -c "CREATE DATABASE $DB;"
+        $psql_ -c "CREATE DATABASE $DB;"
         echo "Database $DB was created"
     fi
 }
@@ -53,18 +56,18 @@ function create_user {
     USER="$2"
     PASSWORD="$3"
 
-    if [ "$(psql -tAc "SELECT 1 FROM pg_roles WHERE rolname = '$USER';")" = "1" ]; then
+    if [ "$($psql_ -tAc "SELECT 1 FROM pg_roles WHERE rolname = '$USER';")" = "1" ]; then
         echo "User $USER exists"
     else
         echo "User $USER doesn't exist, creating..."
-        psql -c "CREATE USER $USER WITH PASSWORD '$PASSWORD';"
+        $psql_ -c "CREATE USER $USER WITH PASSWORD '$PASSWORD';"
         echo "User $USER was created"
     fi
 
-    psql -o /dev/null -ac "GRANT CONNECT ON DATABASE $DB TO $USER"
+    $psql_ -o /dev/null -ac "GRANT CONNECT ON DATABASE $DB TO $USER"
 }
 
-: ${NP_POSTGRES_ADMIN_DSN:=""}
+: ${NP_ADMIN_DSN:=""}
 : ${NP_MIGRATIONS_RUNNER_DSN:=""}
 : ${NP_MIGRATIONS_RUNNER_USER:=""}
 : ${NP_MIGRATIONS_RUNNER_PASSWORD:=""}
@@ -72,20 +75,25 @@ function create_user {
 : ${NP_SERVICE_USER:=""}
 : ${NP_SERVICE_PASSWORD:=""}
 : ${NP_SCHEMA:="public"}
+: ${NP_EXTENSIONS:=""}
 
-if [ -z "$NP_POSTGRES_ADMIN_DSN" ]; then
-    export PGUSER="${NP_POSTGRES_ADMIN_USER:-"postgres"}"
-    export PGPASSWORD="$NP_POSTGRES_ADMIN_PASSWORD"
+if [ -z "$NP_ADMIN_DSN" ]; then
+    export PGUSER="${NP_ADMIN_USER:-"postgres"}"
+    export PGPASSWORD="$NP_ADMIN_PASSWORD"
     export PGHOST="${NP_POSTGRES_HOST:=""}" # connect using unix socket by default
     export PGPORT="${NP_POSTGRES_PORT:="5432"}"
 else
-    export PGUSER="$(get_dsn_user "$NP_POSTGRES_ADMIN_DSN")"
-    export PGPASSWORD="$(get_dsn_password "$NP_POSTGRES_ADMIN_DSN")"
-    export PGHOST="$(get_dsn_host "$NP_POSTGRES_ADMIN_DSN")"
-    export PGPORT="$(get_dsn_port "$NP_POSTGRES_ADMIN_DSN")"
+    export PGUSER="$(get_dsn_user "$NP_ADMIN_DSN")"
+    export PGPASSWORD="$(get_dsn_password "$NP_ADMIN_DSN")"
+    export PGHOST="$(get_dsn_host "$NP_ADMIN_DSN")"
+    export PGPORT="$(get_dsn_port "$NP_ADMIN_DSN")"
 fi
 
 export PGDATABASE="postgres"
+
+for EXTENSION in "${NP_EXTENSIONS[@]}"; do
+    $psql_ -c "CREATE EXTENSION IF NOT EXISTS $EXTENSION;"
+done
 
 if [ ! -z "$NP_MIGRATIONS_RUNNER_DSN" ]; then
     NP_DATABASE="$(get_dsn_db "$NP_MIGRATIONS_RUNNER_DSN")"
@@ -102,7 +110,7 @@ if [ ! -z "$NP_MIGRATIONS_RUNNER_USER" ] && [ ! -z "$NP_MIGRATIONS_RUNNER_PASSWO
 
     create_user "$NP_DATABASE" "$NP_MIGRATIONS_RUNNER_USER" "$NP_MIGRATIONS_RUNNER_PASSWORD"
 
-    psql -tA <<EOF | psql -o /dev/null -a
+    $psql_ -tA <<EOF | psql -o /dev/null -a
 SELECT format(
 'ALTER TABLE %I.%I OWNER TO %I;',
 table_schema,
@@ -110,7 +118,7 @@ table_name,
 '$NP_MIGRATIONS_RUNNER_USER'
 )
 FROM information_schema.tables
-WHERE table_schema = '$NP_SCHEMA' AND table_type = 'BASE TABLE';
+WHERE table_schema = '$NP_POSTGRES_SCHEMA' AND table_type = 'BASE TABLE';
 EOF
 fi
 
@@ -124,11 +132,14 @@ if [ ! -z "$NP_SERVICE_USER" ] && [ ! -z "$NP_SERVICE_PASSWORD" ]; then
 
     create_user "$NP_DATABASE" "$NP_SERVICE_USER" "$NP_SERVICE_PASSWORD"
 
-    psql -o /dev/null -a <<EOF
-GRANT SELECT,INSERT,UPDATE,DELETE,TRUNCATE ON ALL TABLES IN SCHEMA $NP_SCHEMA TO $NP_SERVICE_USER;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA $NP_SCHEMA TO $NP_SERVICE_USER;
-ALTER DEFAULT PRIVILEGES FOR USER $NP_MIGRATIONS_RUNNER_USER IN SCHEMA $NP_SCHEMA GRANT SELECT,INSERT,UPDATE,DELETE,TRUNCATE ON TABLES TO $NP_SERVICE_USER;
-ALTER DEFAULT PRIVILEGES FOR USER $NP_MIGRATIONS_RUNNER_USER IN SCHEMA $NP_SCHEMA GRANT USAGE, SELECT ON SEQUENCES TO $NP_SERVICE_USER;
+    if [ ! -z "$NP_MIGRATIONS_RUNNER_USER" ] && [ ! -z "$NP_MIGRATIONS_RUNNER_PASSWORD" ]; then
+        PGPASSWORD="$NP_MIGRATIONS_RUNNER_PASSWORD" \
+        $psql_ -U "$NP_MIGRATIONS_RUNNER_USER" -o /dev/null -a <<EOF
+GRANT SELECT,INSERT,UPDATE,DELETE,TRUNCATE ON ALL TABLES IN SCHEMA $NP_POSTGRES_SCHEMA TO $NP_SERVICE_USER;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA $NP_POSTGRES_SCHEMA TO $NP_SERVICE_USER;
+ALTER DEFAULT PRIVILEGES FOR USER $NP_MIGRATIONS_RUNNER_USER IN SCHEMA $NP_POSTGRES_SCHEMA GRANT SELECT,INSERT,UPDATE,DELETE,TRUNCATE ON TABLES TO $NP_SERVICE_USER;
+ALTER DEFAULT PRIVILEGES FOR USER $NP_MIGRATIONS_RUNNER_USER IN SCHEMA $NP_POSTGRES_SCHEMA GRANT USAGE, SELECT ON SEQUENCES TO $NP_SERVICE_USER;
 EOF
+    fi
 fi
 {{- end -}}
