@@ -20,8 +20,8 @@ _secret_namespace="default"
 _acme_install() {
   curl https://get.acme.sh | sh -s email="$_email"
 
-  cp /root/dns_neuro.sh $HOME/.acme.sh/
-  cp /root/neuro.sh $HOME/.acme.sh/
+  cp /root/acme/dns_neuro.sh $HOME/.acme.sh/
+  cp /root/acme/neuro.sh $HOME/.acme.sh/
 }
 
 _acme_issue() {
