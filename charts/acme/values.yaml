@@ -5,10 +5,11 @@ bashImage:
 acme:
   email: ""
   dns: ""
-  notify: ""
   server: letsencrypt
   domains: []
+  notifyHook: ""
   sslCertSecretName: ssl-cert
+  rolloutDeploymentName: ""
 
 podLabels: {}
 

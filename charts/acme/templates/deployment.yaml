@@ -48,11 +48,17 @@ spec:
             {{- range .Values.acme.domains }}
             --domain "{{ . }}" \
             {{- end }}
-            {{- if .Values.acme.notify }}
-            --notify {{ .Values.acme.notify }} \
+            {{- if .Values.acme.notifyHook }}
+            --notify-hook {{ .Values.acme.notifyHook }} \
             {{- end }}
+            {{- if .Values.acme.sslCertSecretName }}
             --secret {{ .Values.acme.sslCertSecretName }} \
             --secret-namespace {{ .Release.Namespace }} \
+            {{- end }}
+            {{- if .Values.acme.rolloutDeploymentName }}
+            --rollout-deployment {{ .Values.acme.rolloutDeploymentName }} \
+            --rollout-deployment-namespace {{ .Release.Namespace }} \
+            {{- end }}
             &
 
           tail -f /dev/null
