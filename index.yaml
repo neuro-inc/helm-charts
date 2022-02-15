@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   acme:
   - apiVersion: v2
+    appVersion: 1.0.3
+    created: "2022-02-15T15:19:11.46496424Z"
+    description: SSL certificate automatic issue and renewal using acme.sh script.
+      https://github.com/acmesh-official/acme.sh
+    digest: f654069b225d9817c9fac328f45420efbf744f60ccbdc964c2f14aeb18002908
+    name: acme
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/acme-1.0.3/acme-1.0.3.tgz
+    version: 1.0.3
+  - apiVersion: v2
     appVersion: 1.0.2
     created: "2022-02-15T08:30:40.085006109Z"
     description: SSL certificate automatic issue and renewal using acme.sh script.
@@ -346,4 +356,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-script-1.0.0/postgres-db-init-script-1.0.0.tgz
     version: 1.0.0
-generated: "2022-02-15T08:30:40.085344632Z"
+generated: "2022-02-15T15:19:11.46505254Z"
