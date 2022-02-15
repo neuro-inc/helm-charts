@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "acme.fullname" . }}
+  labels: {{ include "acme.labels.standard" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "acme.name" . }}
+      release: {{ .Release.Name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: {{ include "acme.name" . }}
+        release: {{ .Release.Name }}
+        {{- with .Values.podLabels }}
+{{ toYaml . | indent 8}}
+        {{- end }}
+      annotations:
+        checksum: {{ include (print $.Template.BasePath "/config-map.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "acme.fullname" . }}
+      containers:
+      - name: acme
+        {{- with .Values.bashImage }}
+        image: {{ .repository}}:{{ .tag }}
+        {{- end }}
+        command: [bash]
+        args:
+        - -c
+        - |
+          apk add coreutils openssl socat curl
+
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          mv kubectl /usr/local/bin/
+
+          /root/acme/acme.sh install --email {{ .Values.acme.email | quote }}
+          /root/acme/acme.sh issue \
+            --dns {{ .Values.acme.dns }} \
+            --server {{ .Values.acme.server }} \
+            {{- range .Values.acme.domains }}
+            --domain "{{ . }}" \
+            {{- end }}
+            {{- if .Values.acme.notify }}
+            --notify {{ .Values.acme.notify }} \
+            {{- end }}
+            --secret {{ .Values.acme.sslCertSecretName }} \
+            --secret-namespace {{ .Release.Namespace }} \
+            &
+
+          tail -f /dev/null
+        {{- with .Values.env}}
+        env: {{ toYaml . | nindent 8 }}
+        {{- end }}
+        resources:
+          limits:
+            cpu: 50m
+            memory: 128Mi
+        volumeMounts:
+        - name: acme-sh
+          mountPath: /root/.acme.sh
+        - name: acme
+          mountPath: /root/acme
+      volumes:
+      - name: acme-sh
+        persistentVolumeClaim:
+          claimName: {{ include "acme.fullname" . }}
+      - name: acme
+        configMap:
+          name: {{ include "acme.fullname" . }}
+          defaultMode: 0777

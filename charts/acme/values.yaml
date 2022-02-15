@@ -1,0 +1,19 @@
+bashImage:
+  repository: bash
+  tag: latest
+
+acme:
+  email: ""
+  dns: ""
+  notify: ""
+  server: letsencrypt
+  domains: []
+  sslCertSecretName: ssl-cert
+
+podLabels: {}
+
+env: []
+
+persistence:
+  # storageClassName:
+  size: 1Gi
