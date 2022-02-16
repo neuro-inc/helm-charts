@@ -51,6 +51,17 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/acme-1.0.0/acme-1.0.0.tgz
     version: 1.0.0
+  k8s-resources:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2022-02-16T13:58:20.915557674Z"
+    description: K8s resources
+    digest: 454d76034f6f5799267a2e11fc26840290d28440121777eee42df6a48e78f773
+    name: k8s-resources
+    type: library
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/k8s-resources-1.0.0/k8s-resources-1.0.0.tgz
+    version: 1.0.0
   nfs-server:
   - apiVersion: v1
     appVersion: "0.8"
@@ -366,4 +377,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-script-1.0.0/postgres-db-init-script-1.0.0.tgz
     version: 1.0.0
-generated: "2022-02-15T16:05:03.276116733Z"
+generated: "2022-02-16T13:58:20.915683296Z"
