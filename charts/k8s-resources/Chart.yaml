@@ -1,0 +1,6 @@
+apiVersion: v2
+version: 1.0.0
+appVersion: 1.0.0
+type: library
+name: k8s-resources
+description: K8s resources
