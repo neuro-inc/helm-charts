@@ -17,17 +17,3 @@ Return if ingress is stable.
 {{- define "k8s.ingress.isStable" -}}
   {{- eq (include "k8s.ingress.apiVersion" .) "networking.k8s.io/v1" -}}
 {{- end -}}
-
-{{/*
-Return if ingress supports ingressClassName.
-*/}}
-{{- define "k8s.ingress.supportsIngressClassName" -}}
-  {{- or (eq (include "k8s.ingress.isStable" .) "true") (and (eq (include "k8s.ingress.apiVersion" .) "networking.k8s.io/v1beta1") (semverCompare ">= 1.18-0" .Capabilities.KubeVersion.Version)) -}}
-{{- end -}}
-
-{{/*
-Return if ingress supports pathType.
-*/}}
-{{- define "k8s.ingress.supportsPathType" -}}
-  {{- or (eq (include "k8s.ingress.isStable" .) "true") (and (eq (include "k8s.ingress.apiVersion" .) "networking.k8s.io/v1beta1") (semverCompare ">= 1.18-0" .Capabilities.KubeVersion.Version)) -}}
-{{- end -}}
