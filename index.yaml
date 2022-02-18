@@ -53,6 +53,16 @@ entries:
     version: 1.0.0
   k8s-resources:
   - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2022-02-18T10:20:18.674304131Z"
+    description: K8s resources
+    digest: b12af4d60d9788306842b8e1ddfddd9d580a4beb7586f91dc81d55e19380799e
+    name: k8s-resources
+    type: library
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/k8s-resources-1.0.1/k8s-resources-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v2
     appVersion: 1.0.0
     created: "2022-02-16T13:58:20.915557674Z"
     description: K8s resources
@@ -377,4 +387,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-script-1.0.0/postgres-db-init-script-1.0.0.tgz
     version: 1.0.0
-generated: "2022-02-16T13:58:20.915683296Z"
+generated: "2022-02-18T10:20:18.674500833Z"
