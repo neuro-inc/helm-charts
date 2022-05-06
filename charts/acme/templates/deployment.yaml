@@ -33,7 +33,7 @@ spec:
         {{- end }}
         command: [bash]
         args:
-        - -c
+        - -ec
         - |
           apk add coreutils openssl socat curl
 
