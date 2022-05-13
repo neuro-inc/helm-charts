@@ -61,7 +61,8 @@ spec:
             {{- end }}
             &
 
-          tail -f /dev/null
+          # Start cron daemon, it is responsible for cert renewal
+          crond -f
         {{- with .Values.env}}
         env: {{ toYaml . | nindent 8 }}
         {{- end }}
