@@ -18,3 +18,5 @@ env: []
 persistence:
   # storageClassName:
   size: 1Gi
+
+priorityClassName: ""
