@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   acme:
   - apiVersion: v2
+    appVersion: 1.0.8
+    created: "2023-03-13T16:18:36.504977349Z"
+    description: SSL certificate automatic issue and renewal using acme.sh script.
+      https://github.com/acmesh-official/acme.sh
+    digest: 2bc5547082df4f0b2307848f2c252426e12f10a3d3e79ca72cc61ec8883c338a
+    name: acme
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/acme-1.0.8/acme-1.0.8.tgz
+    version: 1.0.8
+  - apiVersion: v2
     appVersion: 1.0.7
     created: "2022-05-24T09:12:34.086253301Z"
     description: SSL certificate automatic issue and renewal using acme.sh script.
@@ -103,6 +113,15 @@ entries:
     - https://github.com/neuro-inc/helm-charts/releases/download/k8s-resources-1.0.0/k8s-resources-1.0.0.tgz
     version: 1.0.0
   nfs-server:
+  - apiVersion: v1
+    appVersion: "0.8"
+    created: "2023-03-13T16:18:36.69438538Z"
+    description: In-cluster kubernetes NFS server.
+    digest: 4132488cbdad51f705f04671f191f66d5258b005c7d70c425b819f3f43662d57
+    name: nfs-server
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/nfs-server-1.4.1/nfs-server-1.4.1.tgz
+    version: 1.4.1
   - apiVersion: v1
     appVersion: "0.8"
     created: "2021-12-01T10:35:07.707935223Z"
@@ -417,4 +436,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-script-1.0.0/postgres-db-init-script-1.0.0.tgz
     version: 1.0.0
-generated: "2022-05-24T09:12:34.086546507Z"
+generated: "2023-03-13T16:18:36.69461389Z"
