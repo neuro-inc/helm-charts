@@ -84,7 +84,7 @@ _acme_install_cert() {
   acme.sh --install-cert \
     $_debug_option \
     $_domain_options \
-    --ecc
+    --ecc \
     --cert-file $_path/cert.pem \
     --fullchain-file $_path/fullchain.pem \
     --key-file $_path/key.pem
