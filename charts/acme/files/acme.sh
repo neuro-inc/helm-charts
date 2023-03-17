@@ -53,6 +53,7 @@ _acme_issue() {
   fi
 
   acme.sh --issue \
+    --keylength ec-256 \
     --dns dns_$_dns \
     --server $_server \
     --renew-hook "$_renew_hook" \
@@ -83,6 +84,7 @@ _acme_install_cert() {
   acme.sh --install-cert \
     $_debug_option \
     $_domain_options \
+    --ecc
     --cert-file $_path/cert.pem \
     --fullchain-file $_path/fullchain.pem \
     --key-file $_path/key.pem
