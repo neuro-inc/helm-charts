@@ -111,6 +111,9 @@ if [ ! -z "$NP_MIGRATIONS_RUNNER_USER" ] && [ ! -z "$NP_MIGRATIONS_RUNNER_PASSWO
 
     create_user "$NP_DATABASE" "$NP_MIGRATIONS_RUNNER_USER" "$NP_MIGRATIONS_RUNNER_PASSWORD"
 
+    # Allow user to create new schemas
+    $psql_ -o /dev/null -ac "GRANT CREATE ON DATABASE $NP_DATABASE TO $NP_MIGRATIONS_RUNNER_USER"
+
     $psql_ -tA <<EOF | psql -o /dev/null -a
 SELECT format(
 'ALTER TABLE %I.%I OWNER TO %I;',
