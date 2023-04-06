@@ -1,9 +1,9 @@
 apiVersion: v2
-version: 1.2.14
-appVersion: 1.2.14
+version: 1.2.15
+appVersion: 1.2.15
 name: postgres-db-init
 description: PostgreSQL DB initialization
 dependencies:
 - name: postgres-db-init-script
-  version: 1.0.8
+  version: 1.0.9
   repository: https://neuro-inc.github.io/helm-charts
