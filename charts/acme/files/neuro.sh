@@ -50,7 +50,7 @@ neuro_send() {
 
   _message="$(printf "%s\n%s" "$_subject" "$_content" | _json_encode)"
 
-  if ! _neuro_rest POST "/api/v1/clusters/$NEURO_CLUSTER/notifications" "{\"notification_type\": \"$_notification_type\", \"message\": \"$_message\"}"; then
+  if ! _neuro_rest POST "/api/v1/notifications/acme-notification" "{\"notification_type\": \"$_notification_type\", \"cluster\": \"$NEURO_CLUSTER\", \"message\": \"$_message\"}"; then
     _err "Neuro send error."
     _err "$response"
     return 1
