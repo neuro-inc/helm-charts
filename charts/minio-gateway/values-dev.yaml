@@ -1,0 +1,8 @@
+volumes:
+  -
+
+cloudStorage:
+  type: gcs
+
+  gcs:
+    project:

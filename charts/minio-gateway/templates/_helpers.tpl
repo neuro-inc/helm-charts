@@ -60,3 +60,23 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "minio-gateway.rootUser.secretName" -}}
+{{- default (include "minio-gateway.fullname" .) .Values.rootUser.existingSecret.name }}
+{{- end }}
+
+{{- define "minio-gateway.rootUser.secretUserKey" -}}
+{{- if .Values.rootUser.existingSecret.name }}
+{{- .Values.rootUser.existingSecret.userKey }}
+{{- else -}}
+root-user
+{{- end }}
+{{- end }}
+
+{{- define "minio-gateway.rootUser.secretPasswordKey" -}}
+{{- if .Values.rootUser.existingSecret.name }}
+{{- .Values.rootUser.existingSecret.passwordKey }}
+{{- else -}}
+root-password
+{{- end }}
+{{- end }}

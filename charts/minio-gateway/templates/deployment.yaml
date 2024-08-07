@@ -60,10 +60,20 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ include "minio-gateway.fullname" . }}
-          {{- with .Values.env }}
           env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "minio-gateway.rootUser.secretName" . }}
+                  key: {{ include "minio-gateway.rootUser.secretUserKey" . }}
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "minio-gateway.rootUser.secretName" . }}
+                  key: {{ include "minio-gateway.rootUser.secretPasswordKey" . }}
+            {{- with .Values.env }}
             {{- toYaml .Values.env | nindent 12 }}
-          {{- end }}
+            {{- end }}
           {{- with .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}

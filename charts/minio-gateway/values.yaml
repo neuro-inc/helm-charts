@@ -114,8 +114,15 @@ tolerations: []
 
 affinity: {}
 
-rootUser: root-user
-rootPassword: root-password
+rootUser:
+  user: root-user
+  password: root-password
+
+  # Values above are ignored if existing secret is specified.
+  existingSecret:
+    name: ""
+    userKey: root-user
+    passwordKey: root-password
 
 cloudStorage:
   type: # Possible values: gcs, azure
