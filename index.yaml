@@ -142,6 +142,17 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/k8s-resources-1.0.0/k8s-resources-1.0.0.tgz
     version: 1.0.0
+  minio-gateway:
+  - apiVersion: v2
+    appVersion: RELEASE.2022-03-08T22-28-51Z
+    created: "2024-08-07T08:45:02.28627056Z"
+    description: A Helm chart for Kubernetes
+    digest: d98da88e01558a7971ba7ee1ccbd152727c7581b83ee89a0526638bb53398509
+    name: minio-gateway
+    type: application
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/minio-gateway-0.1.0/minio-gateway-0.1.0.tgz
+    version: 0.1.0
   nfs-server:
   - apiVersion: v1
     appVersion: "0.8"
@@ -489,4 +500,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-script-1.0.0/postgres-db-init-script-1.0.0.tgz
     version: 1.0.0
-generated: "2024-01-07T08:36:03.570705904Z"
+generated: "2024-08-07T08:45:02.286410883Z"
