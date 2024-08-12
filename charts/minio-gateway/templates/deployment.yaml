@@ -72,7 +72,7 @@ spec:
                   name: {{ include "minio-gateway.rootUser.secretName" . }}
                   key: {{ include "minio-gateway.rootUser.secretPasswordKey" . }}
             {{- with .Values.env }}
-            {{- toYaml .Values.env | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           {{- with .Values.volumeMounts }}
           volumeMounts:
