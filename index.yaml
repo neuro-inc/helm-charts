@@ -145,6 +145,16 @@ entries:
   minio-gateway:
   - apiVersion: v2
     appVersion: RELEASE.2022-03-08T22-28-51Z
+    created: "2024-09-02T09:41:19.880444671Z"
+    description: A Helm chart for Kubernetes
+    digest: 67a7a49f9fd76ea15dddad45daa1f23c8adb2b00dcb9c174506927be41d5e185
+    name: minio-gateway
+    type: application
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/minio-gateway-0.2.2/minio-gateway-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: RELEASE.2022-03-08T22-28-51Z
     created: "2024-08-12T11:17:34.447396531Z"
     description: A Helm chart for Kubernetes
     digest: ef7dd3d0425c0723b37bd322340af3915e8de5961c903df06c86bab531c3e46b
@@ -520,4 +530,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-script-1.0.0/postgres-db-init-script-1.0.0.tgz
     version: 1.0.0
-generated: "2024-08-12T11:17:34.447569907Z"
+generated: "2024-09-02T09:41:19.880590432Z"
