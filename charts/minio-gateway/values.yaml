@@ -76,6 +76,7 @@ livenessProbe:
   successThreshold: 1
   failureThreshold: 3
   timeoutSeconds: 5
+
 readinessProbe:
   httpGet:
     path: /minio/health/ready
@@ -94,6 +95,8 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 env: []
+
+secrets: []
 
 # Additional volumes on the output Deployment definition.
 volumes: []
