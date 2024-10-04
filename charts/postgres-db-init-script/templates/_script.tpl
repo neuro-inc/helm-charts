@@ -41,12 +41,17 @@ function get_dsn_db {
 
 function create_db {
     DB="$1"
+    OWNER="${2:-}"
 
     if [ "$($psql_ -tAc "SELECT 1 FROM pg_database WHERE datname = '$DB';")" = "1" ]; then
         echo "Database $DB exists"
     else
         echo "Database $DB doesn't exist, creating..."
-        $psql_ -c "CREATE DATABASE $DB;"
+        if [ -z "$OWNER" ]; then
+            $psql_ -c "CREATE DATABASE $DB;"
+        else
+            $psql_ -c "CREATE DATABASE $DB WITH OWNER = $OWNER;"
+        fi
         echo "Database $DB was created"
     fi
 }
@@ -58,6 +63,7 @@ function create_user {
 
     if [ "$($psql_ -tAc "SELECT 1 FROM pg_roles WHERE rolname = '$USER';")" = "1" ]; then
         echo "User $USER exists"
+        $psql_ -c "ALTER USER $USER WITH PASSWORD '$PASSWORD';"
     else
         echo "User $USER doesn't exist, creating..."
         $psql_ -c "CREATE USER $USER WITH PASSWORD '$PASSWORD';"
