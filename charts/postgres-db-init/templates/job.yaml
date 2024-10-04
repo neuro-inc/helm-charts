@@ -22,7 +22,7 @@ spec:
       {{- else }}
       containers:
       {{- end }}
-        - name: create-users
+        - name: init-db
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           command: [/var/lib/postgres_db_init/init_db.sh]
           volumeMounts:
