@@ -563,4 +563,27 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/postgres-db-init-script-1.0.0/postgres-db-init-script-1.0.0.tgz
     version: 1.0.0
-generated: "2024-10-04T08:01:53.969041117Z"
+  thanos:
+  - apiVersion: v1
+    appVersion: 0.10.1
+    created: "2024-10-09T06:55:30.910560093Z"
+    description: Thanos is a set of components that can be composed into a highly
+      available metric system with unlimited storage capacity, which can be added
+      seamlessly on top of existing Prometheus deployments.
+    digest: 443959bf67ca491d88566212775fce129336e24b82c4850f8dc166fe9143ce93
+    icon: https://raw.githubusercontent.com/thanos-io/thanos/master/docs/img/Thanos-logo_fullmedium.png
+    keywords:
+    - thanos
+    - prometheus
+    - metrics
+    maintainers:
+    - email: info@banzaicloud.com
+      name: Banzai Cloud
+    name: thanos
+    sources:
+    - https://github.com/thanos-io/thanos
+    - https://github.com/banzaicloud/banzai-charts/tree/master/thanos
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/thanos-0.3.23/thanos-0.3.23.tgz
+    version: 0.3.23
+generated: "2024-10-09T06:55:30.910757452Z"
