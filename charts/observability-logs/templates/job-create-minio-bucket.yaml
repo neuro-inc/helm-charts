@@ -1,0 +1,32 @@
+{{- if .Values.minioConfig.observabilityBucket.create }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.minioConfig.observabilityBucket.name }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    spec:
+      containers:
+      - name: create-bucket
+        image: minio/mc:latest  # Using MinIO Client image
+        env:
+        - name: MINIO_ACCESS_KEY
+          value: {{ .Values.minioConfig.keyId }}
+        - name: MINIO_SECRET_KEY
+          value: {{ .Values.minioConfig.secretKey }}
+        - name: MINIO_ENDPOINT
+          value: {{ .Values.minioConfig.endpoint }}
+        - name: MINIO_BUCKET_NAME
+          value: {{ .Values.minioConfig.observabilityBucket.name }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          # Create MinIO config
+          mc alias set myminio ${MINIO_ENDPOINT} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY}
+          # Create the bucket
+          mc mb myminio/${MINIO_BUCKET_NAME} || echo "Bucket already exists."
+      restartPolicy: OnFailure
+{{- end }}
