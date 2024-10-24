@@ -52,11 +52,6 @@ loki-stack:
             K8S-Logging.Parser  On
             K8S-Logging.Exclude On
 
-        [FILTER]
-            Name                grep
-            Match               kube.*
-            Regex               $kubernetes['namespace_name']  ^((?!platform-jobs).)*$
-
     input: |
       [INPUT]
           Name              tail
