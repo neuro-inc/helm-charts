@@ -14,9 +14,15 @@ spec:
         image: minio/mc:latest  # Using MinIO Client image
         env:
         - name: MINIO_ACCESS_KEY
-          value: {{ .Values.minioConfig.keyId }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.minioConfig.secretName }}  # Secret name from values.yaml
+              key: {{ .Values.minioConfig.accessKeyField }}  # Key name in the secret for access key
         - name: MINIO_SECRET_KEY
-          value: {{ .Values.minioConfig.secretKey }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.minioConfig.secretName }}  # Secret name from values.yaml
+              key: {{ .Values.minioConfig.secretKeyField }}
         - name: MINIO_ENDPOINT
           value: {{ .Values.minioConfig.endpoint }}
         - name: MINIO_BUCKET_NAME

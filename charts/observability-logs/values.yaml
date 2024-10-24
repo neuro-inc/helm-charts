@@ -6,10 +6,11 @@ additionalGrafanaDataSources:
 minioConfig:
   observabilityBucket:
     create: true
-    name: &bucketname observability-logs
+    name: &bucketname observability-logs-updated
   endpoint: &bucketEndpoint <<MINIO-ENPOINT:PORT>>
-  keyId: &bucketKeyId <<MINIO-ACCESS_KEY-ID>>
-  secretKey: &bucketSecretKey <<MINIO-SECRET_KEY>>
+  secretName: &s3secretName "<<MINIO-K8S-SECRET-NAME>>"
+  accessKeyField: &accessKeyField "<<ACCESS_KEY-FIELD-NAME>>"
+  secretKeyField: &secretKeyField "<<SECRET_KEY-FIELD-NAME>>"
 
 loki-stack:
   grafana:
@@ -117,6 +118,17 @@ loki-stack:
     extraVolumeMounts:
       - name: data
         mountPath: /var/loki
+    extraEnv:
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: *s3secretName
+            key: *accessKeyField
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: *s3secretName
+            key: *secretKeyField
     config:
       schema_config:
         configs:
@@ -138,8 +150,6 @@ loki-stack:
           endpoint:  *bucketEndpoint
           s3forcepathstyle: true
           region: minio
-          access_key_id: *bucketKeyId
-          secret_access_key: *bucketSecretKey
           insecure: true
           sse_encryption: false
       common:
