@@ -1,6 +1,6 @@
 additionalGrafanaDataSources:
   prometheus:
-    enabled: true
+    enabled: false
     url: http://prometheus-prometheus.platform.svc.cluster.local:9090
 
 minioConfig:
