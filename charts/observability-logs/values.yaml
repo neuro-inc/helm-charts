@@ -1,0 +1,159 @@
+additionalGrafanaDataSources:
+  prometheus:
+    enabled: false
+    url: http://prometheus-prometheus.platform.svc.cluster.local:9090
+
+minioConfig:
+  observabilityBucket:
+    create: true
+    name: &bucketname observability-logs-updated
+  endpoint: &bucketEndpoint <<MINIO-ENPOINT:PORT>>
+  secretName: &s3secretName "<<MINIO-K8S-SECRET-NAME>>"
+  accessKeyField: &accessKeyField "<<ACCESS_KEY-FIELD-NAME>>"
+  secretKeyField: &secretKeyField "<<SECRET_KEY-FIELD-NAME>>"
+
+loki-stack:
+  grafana:
+    enabled: true
+    sidecar:
+      datasources:
+        enabled: true
+        label: loki-datasource
+        labelValue: "enabled"
+      dashboards:
+        enabled: true
+
+    # Administrator credentials when not using an existing secret (see below)
+    adminUser: admin
+    adminPassword: <<GRAFANA-ADMIN-PASSWORD>>
+
+    service:
+      type: ClusterIP
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      annotations:
+        kubernetes.io/ingress.class: "traefik"
+        traefik.ingress.kubernetes.io/rewrite-target: /
+        traefik.ingress.kubernetes.io/ssl-redirect: "true"
+      hosts:
+         - <<HOST>>
+
+
+  fluent-bit:
+    enabled: true
+    config:
+      filters: |
+        [FILTER]
+            Name                kubernetes
+            Match               kube.*
+            Kube_Tag_Prefix     kube.var.log.containers.
+            Merge_Log           On
+            Keep_Log            Off
+            K8S-Logging.Parser  On
+            K8S-Logging.Exclude On
+
+    input: |
+      [INPUT]
+          Name              tail
+          Path              /var/log/containers/*.log
+          Parser            docker
+          Tag               kube.*
+          Refresh_Interval  5
+          Skip_Long_Lines   On
+          DB                /var/log/flb_kube.db
+          Mem_Buf_Limit     5MB
+          Skip_Empty_Lines  On
+
+    parser: |
+      [PARSER]
+          Name   multi_parser
+          Format regex
+          Regex  ^(?<time>[^ ]+ [^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<log>.*)$
+          Time_Key time
+          Time_Format %Y-%m-%dT%H:%M:%S.%L
+          Time_Keep On
+          # For JSON logs, if the message is not in the regex pattern, use this parser
+          Decode_Field_As json log
+      [PARSER]
+          Name   docker
+          Format json
+          Time_Key time
+          Time_Format %Y-%m-%dT%H:%M:%S.%L
+          Time_Keep On
+          Decode_Field_As json log
+      [PARSER]
+          Name        json
+          Format      json
+          Time_Key    time
+          Time_Format %d/%b/%Y:%H:%M:%S %z
+          Time_Keep   On
+      [PARSER]
+          Name   plain_text
+          Format regex
+          Regex  ^(?<time>[^ ]+ [^ ]+) (?<log>.*)$
+          Time_Key time
+          Time_Format %Y-%m-%dT%H:%M:%S.%L
+          Time_Keep On
+      [PARSER]
+          Name        cri
+          Format      regex
+          Regex       ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<log>.*)$
+          Time_Key    time
+          Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+          Time_Keep   On
+
+    output:
+      loki:
+        enabled: true
+
+  promtail:
+    enabled: false
+
+
+  loki:
+    extraVolumes:
+      - name: data
+        emptyDir: {}
+    extraVolumeMounts:
+      - name: data
+        mountPath: /var/loki
+    extraEnv:
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: *s3secretName
+            key: *accessKeyField
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: *s3secretName
+            key: *secretKeyField
+    config:
+      schema_config:
+        configs:
+          - from: 2021-05-12
+            store: boltdb-shipper
+            object_store: s3
+            schema: v11
+            index:
+              prefix: loki_index_
+              period: 24h
+      storage_config:
+        boltdb_shipper:
+          active_index_directory: /var/loki/index
+          shared_store: s3
+          cache_location: /var/loki/cache
+          cache_ttl: 12h
+        aws:
+          bucketnames: *bucketname
+          endpoint:  *bucketEndpoint
+          s3forcepathstyle: true
+          region: minio
+          insecure: true
+          sse_encryption: false
+      common:
+        path_prefix: /var/loki
+      table_manager:
+        retention_deletes_enabled: true
+        retention_period: 2160h  # 90 days in hours
