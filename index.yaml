@@ -234,6 +234,19 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/obserbavility-logs-1.1.0/obserbavility-logs-1.1.0.tgz
     version: 1.1.0
+  observability-logs:
+  - apiVersion: v2
+    created: "2024-11-05T10:44:11.982254044Z"
+    dependencies:
+    - name: loki-stack
+      repository: https://grafana.github.io/helm-charts
+      version: 2.10.2
+    digest: 6c0debb9d55634a83d6e41fddbc57d3e83cc0c12aea4b7041e03a0d2802b7f02
+    name: observability-logs
+    type: application
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/observability-logs-1.1.0/observability-logs-1.1.0.tgz
+    version: 1.1.0
   postgres-db-init:
   - apiVersion: v2
     appVersion: 1.2.16
@@ -599,4 +612,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/thanos-0.3.23/thanos-0.3.23.tgz
     version: 0.3.23
-generated: "2024-10-28T09:24:51.581689561Z"
+generated: "2024-11-05T10:44:11.982645958Z"
