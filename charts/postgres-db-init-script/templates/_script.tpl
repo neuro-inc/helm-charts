@@ -10,6 +10,7 @@ psql_="psql -v ON_ERROR_STOP=1"
 function parse_dsn {
     DSN="$1"
     DSN="${DSN#"postgresql://"}"
+    DSN="${DSN#"postgresql+asyncpg://"}"
     DSN="${DSN#"postgres://"}"
     echo -n "$DSN" | sed -E 's/:|@|\/|\?/ /g'
 }
