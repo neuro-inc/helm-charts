@@ -1,0 +1,75 @@
+{{- if .Values.additionalGrafanaDataSources.loki.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-grafana-loki-datasource
+  labels:
+    grafana_datasource: "enabled"
+data:
+  loki-datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: Loki
+      type: loki
+      url: {{ tpl .Values.additionalGrafanaDataSources.loki.url . | quote }}
+      access: proxy
+      isDefault: {{ .Values.additionalGrafanaDataSources.loki.isDefault }}
+      editable: true
+{{- end }}
+---
+{{- if .Values.additionalGrafanaDataSources.prometheus.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-grafana-prometheus-datasource
+  labels:
+    grafana_datasource: "enabled"
+data:
+  prometheus-datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: {{ tpl .Values.additionalGrafanaDataSources.prometheus.url . | quote }}
+      access: proxy
+      isDefault: {{ .Values.additionalGrafanaDataSources.prometheus.isDefault }}
+      editable: true
+{{- end }}
+---
+{{- if .Values.additionalGrafanaDataSources.mimir.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-grafana-mimir-datasource
+  labels:
+    grafana_datasource: "enabled"
+data:
+  mimir-datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: Mimir
+      type: prometheus
+      url: {{ tpl .Values.additionalGrafanaDataSources.mimir.url . | quote }}
+      access: proxy
+      isDefault: {{ .Values.additionalGrafanaDataSources.mimir.isDefault }}
+      editable: true
+{{- end }}
+---
+{{- if .Values.additionalGrafanaDataSources.mimirAlerts.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-grafana-mimir-alerts-datasource
+  labels:
+    grafana_datasource: "enabled"
+data:
+  mimir-alerts-datasource.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: MimirAlerts
+      type: alertmanager
+      url: {{ tpl .Values.additionalGrafanaDataSources.mimirAlerts.url . | quote }}
+      access: proxy
+      isDefault: {{ .Values.additionalGrafanaDataSources.mimirAlerts.isDefault }}
+      editable: true
+{{- end }}

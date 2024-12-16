@@ -1,0 +1,944 @@
+###############
+additionalGrafanaDataSources:
+  loki:
+    enabled: false
+    url: "http://{{ .Release.Name }}-loki-gateway:80/"
+    isDefault: false
+  prometheus:
+    enabled: false
+    url: "ttp://prometheus-prometheus.platform.svc.cluster.local:9090"
+    isDefault: false
+  mimir:
+    enabled: false
+    url: "http://{{ .Release.Name }}-mimir-nginx/prometheus"
+    isDefault: false
+  mimirAlerts:
+    enabled: false
+    url: "http://{{ .Release.Name }}-mimir-nginx/"
+    isDefault: false
+
+
+###############
+grafana_dashboards:
+  enabled: true
+  annotations: {}
+  labels:
+    grafana_dashboard: "enabled"
+
+
+###############
+grafana:
+  enabled: true
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: false
+    ingressClassName: traefik
+    annotations:
+      kubernetes.io/ingress.class: "traefik"
+      traefik.ingress.kubernetes.io/rewrite-target: /
+      traefik.ingress.kubernetes.io/ssl-redirect: "true"
+    hosts:
+      - <<HOST>>
+  persistence:
+    enabled: false
+    size: 10Gi
+    storageClassName:
+    type: pvc
+  sidecar:
+    alerts:
+      enabled: true
+      label: grafana_alert
+      labelValue: "enabled"
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "enabled"
+      extraArgs:
+        - --retry-backoff=5s
+        - --retry-max=10
+    datasources:
+      enabled: true
+      label: grafana_datasource
+      labelValue: "enabled"
+      extraArgs:
+        - --retry-backoff=5s
+        - --retry-max=10
+    plugins:
+      enabled: false
+      label: grafana_plugin
+      labelValue: "enabled"
+    notifiers:
+      enabled: false
+      label: grafana_notifier
+      labelValue: "enabled"
+
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - disableDeletion: false
+        editable: true
+        folder: ""
+        name: default
+        options:
+          path: /var/lib/grafana/dashboards/default
+        orgId: 1
+        type: file
+
+  assertNoLeakedSecrets: false
+
+
+###############
+fluent-bit:
+  enabled: false
+
+
+###############
+loki:
+  enabled: false
+  minio:
+    enabled: false
+  deploymentMode: SimpleScalable
+
+  global:
+    dnsService: "kube-dns" #"coredns" for k8s like scottdc cp
+    dnsNamespace: kube-system
+    clusterDomain: cluster.local.
+
+  test:
+    enabled: false
+  lokiCanary:
+    enabled: false
+
+  resultsCache:
+    allocatedMemory: 128
+  chunksCache:
+    allocatedMemory: 1024
+
+  loki:
+    auth_enabled: false
+    storage:
+      bucketNames:
+        chunks: <<BUCKET-NAME>>
+        ruler: <<BUCKET-NAME>>
+        admin: <<BUCKET-NAME>>
+      type: s3
+      s3:
+        access_key_id: <<MINIO-ACCESS-KEY>>
+        endpoint: <<MINIO-ENDPOINT>>
+        insecure: true
+        region: minio
+        s3forcepathstyle: true
+        secret_access_key: <<MINIO-SECRET-KEY>>
+
+    schemaConfig:
+      configs:
+      - from: 2020-10-24
+        store: boltdb-shipper
+        object_store: s3
+        schema: v11
+        index:
+          prefix: index_
+          period: 24h
+      - from: 2022-10-15
+        store: boltdb-shipper
+        object_store: s3
+        schema: v12
+        index:
+          prefix: index_
+          period: 24h
+      - from: "2023-04-19"
+        store: tsdb
+        object_store: s3
+        schema: v12
+        index:
+          prefix: index_
+          period: 24h
+      - from: "2024-05-29"
+        store: tsdb
+        object_store: s3
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+    rulerConfig:
+      alertmanager_url: http://_http-metrics._tcp.{{ .Release.Name }}-mimir-alertmanager-headless.{{ .Release.Namespace }}.svc.cluster.local./alertmanager
+      enable_alertmanager_discovery: true
+      enable_alertmanager_v2: true
+      enable_api: true
+      storage:
+        type: s3
+        s3:
+          bucketnames: <<BUCKET-NAME>>
+          insecure: false
+          region: minio
+          access_key_id: <<MINIO-ACCESS-KEY>>
+          endpoint: <<MINIO-ENDPOINT>>
+          s3forcepathstyle: true
+          secret_access_key: <<MINIO-SECRET-KEY>>
+
+
+    storage_config:
+      boltdb_shipper:
+        active_index_directory: /var/loki/index
+        cache_location: /var/loki/cache
+        cache_ttl: 12h         # Can be increased for faster performance over longer query periods, uses more disk space
+      tsdb_shipper:
+        active_index_directory: /var/loki/index
+        cache_location: /var/loki/cache
+
+    table_manager:
+      retention_deletes_enabled: true
+      retention_period: 2160h
+
+      tsdb_shipper:
+        active_index_directory: /var/loki/index
+        cache_location: /var/loki/cache
+    # For query_scheduler and querier see recommendations at:
+    # https://grafana.com/docs/loki/latest/operations/storage/tsdb/
+    query_scheduler:
+      max_outstanding_requests_per_tenant: 32768
+    querier:
+      max_concurrent: 16
+    limits_config:
+      retention_period: 90d
+
+  gateway:
+    replicas: 2
+    resources:
+      requests:
+        memory: 50Mi
+        cpu: 10m
+      limits:
+        memory: 100Mi
+
+  write:
+    replicas: 2
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+
+  read:
+    replicas: 2
+    resources:
+      requests:
+        memory: 100Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+
+  backend:
+    replicas: 2
+    resources:
+      requests:
+        memory: 100Mi
+        cpu: 100m
+      limits:
+        memory: 512Mi
+
+
+###############
+alloy-logs:
+  enabled: false
+  alloy:
+    # Clustering disabled as log gathering is local
+    clustering: { enabled: false }
+    enableReporting: false
+
+    mounts:
+      # Mount /var/log from the host into the container for log collection.
+      varlog: true
+
+      extra:
+        - name: journal
+          readOnly: true
+          mountPath: /var/log/journal
+
+    resources:
+      limits:
+        memory: 512Mi
+      requests:
+        cpu: 30m
+        memory: 150Mi
+
+    configMap:
+      create: true
+      content: |-
+        loki.write "default" {
+          endpoint {
+            url = "http://{{ .Release.Name }}-loki-gateway.{{ .Release.Namespace }}.svc.cluster.local/loki/api/v1/push"
+          }
+        }
+
+        discovery.kubernetes "kubernetes_pods" {
+          role = "pod"
+
+          selectors {
+            role = "pod"
+            field = "spec.nodeName=" + coalesce(env("HOSTNAME"), constants.hostname)
+          }
+        }
+
+        discovery.relabel "kubernetes_pods" {
+          targets = discovery.kubernetes.kubernetes_pods.targets
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_controller_name"]
+            regex         = "([0-9a-z-.]+?)(-[0-9a-f]{8,10})?"
+            target_label  = "__tmp_controller_name"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name", "__meta_kubernetes_pod_label_app", "__tmp_controller_name", "__meta_kubernetes_pod_name"]
+            regex         = "^;*([^;]+)(;.*)?$"
+            target_label  = "app"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_instance", "__meta_kubernetes_pod_label_instance"]
+            regex         = "^;*([^;]+)(;.*)?$"
+            target_label  = "instance"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_component", "__meta_kubernetes_pod_label_component"]
+            regex         = "^;*([^;]+)(;.*)?$"
+            target_label  = "component"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_node_name"]
+            target_label  = "node_name"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+
+          rule {
+            source_labels = ["namespace", "app"]
+            separator     = "/"
+            target_label  = "job"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_name"]
+            target_label  = "pod"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_container_name"]
+            target_label  = "container"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
+            separator     = "/"
+            target_label  = "__path__"
+            replacement   = "/var/log/pods/*$1/*.log"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_annotationpresent_kubernetes_io_config_hash", "__meta_kubernetes_pod_annotation_kubernetes_io_config_hash", "__meta_kubernetes_pod_container_name"]
+            separator     = "/"
+            regex         = "true/(.*)"
+            target_label  = "__path__"
+            replacement   = "/var/log/pods/*$1/*.log"
+          }
+        }
+
+        local.file_match "kubernetes_pods" {
+          path_targets = discovery.relabel.kubernetes_pods.output
+        }
+
+        loki.process "kubernetes_pods" {
+          forward_to = [loki.write.default.receiver]
+
+          stage.cri { }
+
+          stage.replace {
+            expression = "(\\n)"
+          }
+
+          stage.decolorize {}
+
+          stage.multiline {
+            firstline = "^\\S+.*"
+            max_lines = 0
+          }
+
+          stage.match {
+            selector = "{pod=~\".+\"} |~ \"^\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}(?:\\\\.\\\\d+)?Z?\\\\s+\\\\S+\\\\s+\\\\S+\\\\s+(?:\\\\[[^\\\\]]*\\\\])?\\\\s+.*\""
+
+            stage.regex {
+              expression = "(?s)(?P<timestamp>\\S+)\\s+(?P<level>\\S+)\\s+(?P<logger>\\S+)\\s+(?:\\[(?P<context>[^\\]]*)\\])?\\s+(?P<message>.*)"
+            }
+
+            stage.timestamp {
+              source = "timestamp"
+              format = "RFC3339"
+            }
+
+            stage.labels {
+              values = {
+                context = "",
+                level   = "",
+                logger  = "",
+              }
+            }
+
+            stage.structured_metadata {
+              values = {
+                level   = "",
+              }
+            }
+
+            stage.output {
+              source = "message"
+            }
+          }
+
+          stage.pack {
+            labels           = ["container", "stream", "node_name", "pod", "level", "logger", "context"]
+            ingest_timestamp = false
+          }
+
+          stage.label_keep {
+            values = ["app", "instance", "namespace"]
+          }
+        }
+
+        loki.source.file "kubernetes_pods" {
+          targets               = local.file_match.kubernetes_pods.targets
+          forward_to            = [loki.process.kubernetes_pods.receiver]
+        }
+
+        loki.process "journal" {
+          forward_to = [loki.write.default.receiver]
+
+          stage.pack {
+            labels           = ["unit", "node_name"]
+            ingest_timestamp = false
+          }
+        }
+
+        discovery.relabel "journal" {
+          targets = []
+
+          rule {
+            source_labels = ["__journal__systemd_unit"]
+            target_label  = "unit"
+          }
+
+          rule {
+            source_labels = ["__journal__hostname"]
+            target_label  = "node_name"
+          }
+        }
+
+        loki.source.journal "journal" {
+          max_age       = "12h0m0s"
+          path          = "/var/log/journal"
+          relabel_rules = discovery.relabel.journal.rules
+          forward_to    = [loki.process.journal.receiver]
+          labels        = {
+            app = "systemd",
+          }
+        }
+
+  controller:
+    type: daemonset
+
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 10
+      targetMemoryUtilizationPercentage: 85
+
+    volumes:
+      extra:
+        - name: journal
+          hostPath:
+            path: /var/log/journal
+
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+
+  crds:
+    create: false
+
+
+###############
+mimir:
+  enabled: false
+
+  global:
+    dnsService: "kube-dns" #"coredns" for k8s like scottdc cp
+    dnsNamespace: kube-system
+    clusterDomain: cluster.local.
+
+  mimir:
+    structuredConfig:
+      limits:
+        max_global_series_per_user: 5000000
+        ruler_max_rules_per_rule_group: 50
+        compactor_block_upload_enabled: true
+        compactor_blocks_retention_period: 15d
+
+      common:
+        storage:
+          backend: s3
+          s3:
+            bucket_name: <<BUCKET-NAME>>
+            endpoint: <<MINIO-ENDPOINT>>
+            region: minio
+            insecure: true
+
+      blocks_storage:
+        storage_prefix: block
+        s3:
+          bucket_name: <<BUCKET-NAME>>
+      alertmanager_storage:
+        storage_prefix: alert
+        s3:
+          bucket_name: <<BUCKET-NAME>>
+      ruler_storage:
+        storage_prefix: ruler
+        s3:
+          bucket_name: <<BUCKET-NAME>>
+
+  runtimeConfig:
+    overrides:
+      anonymous:
+        ingestion_rate: 50000
+
+  ingester:
+    zoneAwareReplication:
+      enabled: false
+    replicas: 2
+    resources:
+      requests:
+        cpu: 100m
+        memory: 1Gi
+    env:
+      - name: "GOMEMLIMIT"
+        value: 1GiB
+    persistentVolume:
+      size: 6Gi
+
+  compactor:
+    replicas: 1
+    resources:
+      requests:
+        memory: 200Mi
+    persistentVolume:
+      size: 20Gi
+
+  distributor:
+    replicas: 1
+    resources:
+      requests:
+        memory: 200Mi
+
+  ruler_querier:
+    replicas: 1
+
+  ruler_query_scheduler:
+    replicas: 1
+
+  querier:
+    enabled: true
+    replicas: 1
+
+  query_scheduler:
+    enabled: true
+    replicas: 1
+
+
+  store_gateway:
+    zoneAwareReplication:
+      enabled: false
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 300Mi
+
+  nginx:
+    enabled: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 20Mi
+
+  minio:
+    enabled: false
+
+  metaMonitoring:
+    dashboards:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+
+
+###############
+alloy-metrics:
+  enabled: false
+  alloy:
+    clustering:
+      enabled: true
+    enableReporting: false
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 200Mi
+      limits:
+        memory: 1Gi
+
+    configMap:
+      create: true
+      content: |-
+        prometheus.remote_write "default" {
+          endpoint {
+            url = "http://{{ .Release.Name }}-mimir-nginx/api/v1/push"
+          }
+        }
+
+        prometheus.operator.servicemonitors "default" {
+          forward_to = [prometheus.remote_write.default.receiver]
+          clustering {
+            enabled = true
+          }
+
+          scrape {
+            default_scrape_interval = "30s"
+          }
+        }
+
+  controller:
+    type: 'deployment'
+
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/instance: alloy-metrics
+        matchLabelKeys:
+          - pod-template-hash
+
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 10
+      targetMemoryUtilizationPercentage: 85
+
+  crds: {create: false}
+
+  tolerations:
+    - effect: "NoSchedule"
+      operator: "Exists"
+
+
+###############
+alloy-events:
+  enabled: false
+  alloy:
+    clustering:
+      enabled: false
+    enableReporting: false
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 100Mi
+      limits:
+        memory: 150Mi
+
+
+    configMap:
+      create: true
+      content: |-
+        loki.write "default" {
+          endpoint {
+            url = "http://{{ .Release.Name }}-loki-gateway.{{ .Release.Namespace }}.svc.cluster.local/loki/api/v1/push"
+          }
+        }
+
+        loki.source.kubernetes_events "default" {
+          forward_to = [loki.process.default.receiver]
+        }
+
+        loki.process "default" {
+          forward_to = [loki.write.default.receiver]
+
+          stage.label_drop {
+            values = [ "instance", "job" ]
+          }
+
+          stage.static_labels {
+            values = {
+              app = "cluster-events",
+            }
+          }
+        }
+
+  controller:
+    type: 'deployment'
+    replicas: 1
+    autoscaling: { enabled: false }
+
+  crds: {create: false}
+
+
+###############
+alloy-uptime:
+  enabled: false
+  alloy:
+    clustering:
+      enabled: false
+    enableReporting: false
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 100Mi
+      limits:
+        memory: 500Mi
+
+
+    configMap:
+      create: true
+      content: |-
+        prometheus.remote_write "default" {
+          endpoint {
+            url = "http://{{ .Release.Name }}-mimir-nginx/api/v1/push"
+          }
+        }
+
+        discovery.kubernetes "default" {
+          role = "ingress"
+        }
+
+        prometheus.exporter.blackbox "default" {
+          config = "{ modules: { http_2xx: { prober: http, timeout: 30s, http: { preferred_ip_protocol: \"ip4\", headers: { Accept: \"text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8\" } } } } }"
+
+          target {
+            name = "dummy"
+            address = "dummy"
+          }
+        }
+
+        // ref: https://github.com/grafana/agent-modules/blob/main/modules/grafana-agent/dynamic-blackbox/module.river
+        // TODO: simplify with https://github.com/grafana/alloy/pull/997
+        discovery.relabel "default" {
+          targets = discovery.kubernetes.default.targets
+
+          rule {
+            source_labels = [
+              "__meta_kubernetes_ingress_scheme",
+              "__address__",
+              "__meta_kubernetes_ingress_path",
+            ]
+
+            regex        = "(.+);(.+);(.+)"
+            replacement  = "https://${2}${3}"
+            target_label = "__param_target"
+          }
+
+          rule {
+            source_labels = ["__param_target"]
+            target_label = "target"
+          }
+
+          rule {
+            target_label = "__param_module"
+            replacement  = "http_2xx"
+          }
+
+          rule {
+            target_label = "__address__"
+            replacement = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+
+          rule {
+            target_label = "__metrics_path__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+        }
+
+        prometheus.scrape "default" {
+          targets    = discovery.relabel.default.output
+          forward_to = [prometheus.remote_write.default.receiver]
+
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
+
+          clustering {
+            enabled = true
+          }
+        }
+
+  controller:
+    type: 'deployment'
+    replicas: 1
+    autoscaling: { enabled: false }
+
+  crds: {create: false}
+
+
+###############
+alloy-dbs:
+  enabled: false
+  alloy:
+    clustering:
+      enabled: false
+    enableReporting: false
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 100Mi
+      limits:
+        memory: 150Mi
+
+    configMap:
+      create: true
+      content: |-
+        prometheus.remote_write "default" {
+          endpoint {
+            url = "http://{{ .Release.Name }}-mimir-nginx/api/v1/push"
+          }
+        }
+
+        prometheus.exporter.redis "redis" {
+          redis_addr = "REDIS_ADDRESS:PORT"
+          extra_flags = ["--no-client-name"]  // for redis lower than 2.8.12
+        }
+        prometheus.scrape "redis" {
+          targets    = prometheus.exporter.redis.redis.targets
+          forward_to = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+        }
+
+        prometheus.exporter.postgres "postgres" {
+          data_source_names = ["postgresql://username:password@localhost:5432/database_name?sslmode=disable"]
+          autodiscovery {
+            enabled            = true
+          }
+        }
+        prometheus.scrape "postgres" {
+          targets    = prometheus.exporter.postgres.postgres.targets
+          forward_to = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+        }
+
+  controller:
+    type: 'deployment'
+    replicas: 1
+    autoscaling: { enabled: false }
+
+  crds: {create: false}
+
+
+###############
+kube-prometheus-stack:
+  enabled: false
+
+  crds:
+    enabled: true
+
+  grafana:
+    enabled: false
+
+  prometheusOperator:
+    tls:
+      enabled: false
+    admissionWebhooks:
+      enabled: false
+      failurePolicy: "Ignore"
+
+  alertmanager:
+    enabled: false
+
+
+  prometheus:
+    enabled: false
+
+  kubeEtcd:
+    enabled: false
+  kubeControllerManager:
+    enabled: false
+  kubeScheduler:
+    enabled: false
+  kubeApiServer:
+    enabled: false
+
+  kubelet:
+    serviceMonitor:
+      probes: false
+
+      cAdvisorMetricRelabelings:
+      # Defaults:
+      - sourceLabels: [__name__]
+        action: drop
+        regex: 'container_cpu_(cfs_throttled_seconds_total|load_average_10s|system_seconds_total|user_seconds_total)'
+      - sourceLabels: [__name__]
+        action: drop
+        regex: 'container_fs_(io_current|io_time_seconds_total|io_time_weighted_seconds_total|reads_merged_total|sector_reads_total|sector_writes_total|writes_merged_total)'
+      - sourceLabels: [__name__]
+        action: drop
+        regex: 'container_memory_(mapped_file|swap)'
+      - sourceLabels: [__name__]
+        action: drop
+        regex: 'container_(file_descriptors|tasks_state|threads_max)'
+      - sourceLabels: [__name__]
+        action: drop
+        regex: 'container_spec.*'
+      - sourceLabels: [id, pod]
+        action: drop
+        regex: '.+;'
+      # Custom:
+      - sourceLabels: [__name__]
+        action: drop
+        regex: 'container_(blkio_device_usage_total|memory_failures_total)'
+
+  kubeProxy:
+    serviceMonitor:
+      metricRelabelings:
+      - sourceLabels: [__name__]
+        action: drop
+        regex: 'kubernetes_feature_enabled'
+
+  kube-state-metrics:
+    autosharding: { enabled: true }
+    replicas: 3
+    collectors:
+      - daemonsets
+      - deployments
+      - horizontalpodautoscalers
+      - jobs
+      - namespaces
+      - nodes
+      - persistentvolumeclaims
+      - persistentvolumes
+      - pods
+      - replicasets
+      - statefulsets
+
+  prometheus-node-exporter:
+    resources:
+      limits:
+        memory: 250Mi
+      requests:
+        cpu: 10m
+        memory: 20Mi
+
