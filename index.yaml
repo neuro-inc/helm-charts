@@ -236,6 +236,61 @@ entries:
     version: 1.1.0
   observability:
   - apiVersion: v2
+    created: "2024-12-16T07:33:28.523296355Z"
+    dependencies:
+    - condition: grafana.enabled
+      name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: 8.7.0
+    - condition: fluent-bit.enabled
+      name: fluent-bit
+      repository: https://grafana.github.io/helm-charts
+      version: 2.6.0
+    - condition: loki.enabled
+      name: loki
+      repository: https://grafana.github.io/helm-charts
+      version: 6.23.0
+    - alias: mimir
+      condition: mimir.enabled
+      name: mimir-distributed
+      repository: https://grafana.github.io/helm-charts
+      version: 5.3.0
+    - alias: alloy-logs
+      condition: alloy-logs.enabled
+      name: alloy
+      repository: https://grafana.github.io/helm-charts
+      version: 0.10.1
+    - alias: alloy-metrics
+      condition: alloy-metrics.enabled
+      name: alloy
+      repository: https://grafana.github.io/helm-charts
+      version: 0.10.1
+    - alias: alloy-events
+      condition: alloy-events.enabled
+      name: alloy
+      repository: https://grafana.github.io/helm-charts
+      version: 0.10.1
+    - alias: alloy-uptime
+      condition: alloy-uptime.enabled
+      name: alloy
+      repository: https://grafana.github.io/helm-charts
+      version: 0.10.1
+    - alias: alloy-dbs
+      condition: alloy-dbs.enabled
+      name: alloy
+      repository: https://grafana.github.io/helm-charts
+      version: 0.10.1
+    - condition: kube-prometheus-stack.enabled
+      name: kube-prometheus-stack
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 65.3.2
+    digest: 4e263d1f9af8bcc8750c9a299b78e9f0da2651c8a70060d5cea9c2c964c1cd69
+    name: observability
+    type: application
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/observability-1.2.0/observability-1.2.0.tgz
+    version: 1.2.0
+  - apiVersion: v2
     created: "2024-12-16T01:17:27.344481027Z"
     dependencies:
     - condition: grafana.enabled
@@ -668,4 +723,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/thanos-0.3.23/thanos-0.3.23.tgz
     version: 0.3.23
-generated: "2024-12-16T01:17:27.344613264Z"
+generated: "2024-12-16T07:33:28.523478753Z"
