@@ -103,8 +103,6 @@ loki:
 
   global:
     dnsService: "kube-dns" #"coredns" for k8s like scottdc cp
-    dnsNamespace: kube-system
-    clusterDomain: cluster.local.
 
   test:
     enabled: false
@@ -480,8 +478,6 @@ mimir:
 
   global:
     dnsService: "kube-dns" #"coredns" for k8s like scottdc cp
-    dnsNamespace: kube-system
-    clusterDomain: cluster.local.
 
   mimir:
     structuredConfig:
