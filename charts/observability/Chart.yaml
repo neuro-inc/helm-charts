@@ -1,0 +1,62 @@
+apiVersion: v2
+name: observability
+
+type: application
+version: 1.2.0
+
+dependencies:
+  - name: grafana
+    version: 8.7.0
+    repository:  https://grafana.github.io/helm-charts
+    condition: grafana.enabled
+
+  - name: fluent-bit
+    condition: fluent-bit.enabled
+    repository: https://grafana.github.io/helm-charts
+    version: 2.6.0
+
+  - name: loki
+    version: 6.23.0
+    repository: https://grafana.github.io/helm-charts
+    condition: loki.enabled
+
+  - name: mimir-distributed
+    alias: mimir
+    repository: https://grafana.github.io/helm-charts
+    version: 5.3.0
+    condition: mimir.enabled
+
+  - alias: alloy-logs
+    name: alloy
+    version: 0.10.1
+    repository: https://grafana.github.io/helm-charts
+    condition: alloy-logs.enabled
+
+  - alias: alloy-metrics
+    name: alloy
+    version: 0.10.1
+    repository: https://grafana.github.io/helm-charts
+    condition: alloy-metrics.enabled
+
+  - alias: alloy-events
+    name: alloy
+    version: 0.10.1
+    repository: https://grafana.github.io/helm-charts
+    condition: alloy-events.enabled
+
+  - alias: alloy-uptime
+    name: alloy
+    version: 0.10.1
+    repository: https://grafana.github.io/helm-charts
+    condition: alloy-uptime.enabled
+
+  - alias: alloy-dbs
+    name: alloy
+    version: 0.10.1
+    repository: https://grafana.github.io/helm-charts
+    condition: alloy-dbs.enabled
+
+  - name: kube-prometheus-stack
+    version: 65.3.2
+    repository: https://prometheus-community.github.io/helm-charts
+    condition: kube-prometheus-stack.enabled

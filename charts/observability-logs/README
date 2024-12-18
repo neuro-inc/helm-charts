@@ -1,4 +1,0 @@
-Monitoring tools based on Loki-stack:
- - loki (with backend in minio S3)
- - grafana
- - fluent-bit

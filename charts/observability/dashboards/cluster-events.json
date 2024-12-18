@@ -1,0 +1,179 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 51,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "P8E80F9AEF21F6940"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "filters": {
+        "name": {
+          "field": "name",
+          "label": "Name",
+          "type": "dropdown"
+        },
+        "namespace": {
+          "field": "namespace",
+          "label": "Namespace",
+          "type": "dropdown"
+        }
+      },
+      "gridPos": {
+        "h": 19,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "10.3.3",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
+          "editorMode": "builder",
+          "expr": "{app=\"cluster-events\"} | unpack | logfmt",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Cluster Events Logs",
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "format": "auto",
+            "replace": true,
+            "source": "labels"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "__error__": true,
+              "__error_details__": true,
+              "app": true,
+              "count": true,
+              "eventRV": true,
+              "reportingcontroller": true,
+              "reportinginstance": true,
+              "sourcecomponent": true,
+              "sourcehost": true,
+              "type": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "__error__": 4,
+              "__error_details__": 5,
+              "action": 6,
+              "app": 7,
+              "count": 15,
+              "eventRV": 8,
+              "kind": 2,
+              "msg": 3,
+              "name": 1,
+              "namespace": 0,
+              "objectAPIversion": 9,
+              "objectRV": 10,
+              "reason": 11,
+              "reportingcontroller": 12,
+              "reportinginstance": 13,
+              "sourcecomponent": 16,
+              "sourcehost": 17,
+              "type": 14
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": [
+    "kubernetes",
+    "events",
+    "loki"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Kubernetes Cluster Events",
+  "uid": "e69ca42b-f06d-4c8e-a01f-217ed78129fa",
+  "version": 3,
+  "weekStart": ""
+}
