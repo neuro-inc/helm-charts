@@ -9,6 +9,8 @@ image:
 
 args: []
 
+env: []
+
 service:
   type: ClusterIP
   # clusterIP: 10.100.104.98
