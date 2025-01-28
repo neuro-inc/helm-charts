@@ -85,6 +85,8 @@ spec:
               add:
                 - DAC_READ_SEARCH
                 - SYS_RESOURCE
+                - SETPCAP
+                - SYS_ADMIN
           env:
             - name: POD_IP
               valueFrom:
@@ -94,7 +96,9 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- if .Values.persistence }}
           volumeMounts:
             {{- range $index, $data := .Values.persistence }}
