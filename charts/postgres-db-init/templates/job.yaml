@@ -52,6 +52,7 @@ spec:
       containers:
         - name: run-migrations
           image: {{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag }}
+          imagePullPolicy: {{ .Values.migrations.imagePullPolicy }}
           {{- with .Values.migrations.command }}
           command: {{ toYaml . | nindent 12 }}
           {{- end }}

@@ -31,10 +31,12 @@ migrations:
   image:
     repository:
     tag:
-
+  imagePullPolicy: Always
   command: []
   args: []
 
   env: []
 
 secret: {}
+
+
