@@ -22,9 +22,9 @@
 - name: WEBHOOK_PATH
   value: "{{ .Values.admissionController.webhookPath }}"
 - name: OBJECT_SELECTOR
-  value: "{{ .Values.admissionController.objectSelector | toJson | quote }}"
+  value: {{ .Values.admissionController.objectSelector | toJson | quote }}
 - name: NAMESPACE_SELECTOR
-  value: "{{ .Values.admissionController.namespaceSelector | toJson | quote }}"
+  value: {{ .Values.admissionController.namespaceSelector | toJson | quote }}
 - name: FAILURE_POLICY
   value: "{{ .Values.admissionController.failurePolicy }}"
 - name: CERT_SECRET_NAME
