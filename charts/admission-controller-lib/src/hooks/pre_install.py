@@ -104,12 +104,13 @@ def generate_ca_and_server_cert(service_dns_name: str) -> dict[str, str]:
 async def main():
     namespace = os.environ["K8S_NS"]
     service_name = os.environ["SERVICE_NAME"]
+    cert_secret_name = os.environ["CERT_SECRET_NAME"]
     service_dsn = f"{service_name}.{namespace}.svc"
     kube_config = create_kube_config()
 
     async with kube_client_from_config(kube_config) as kube:
         try:
-            await get_cert_secret(kube, secret_name=service_name)
+            await get_cert_secret(kube, secret_name=cert_secret_name)
         except ResourceNotFound:
             # mean we need to create certs
             pass
@@ -119,7 +120,7 @@ async def main():
 
         # let's create certificates, and put them into a secret
         certs = generate_ca_and_server_cert(service_dns_name=service_dsn)
-        await create_cert_secret(kube, secret_name=service_name, certs=certs)
+        await create_cert_secret(kube, secret_name=cert_secret_name, certs=certs)
 
 
 if __name__ == '__main__':

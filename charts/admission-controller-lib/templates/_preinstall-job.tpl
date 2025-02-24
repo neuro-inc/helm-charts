@@ -73,7 +73,7 @@ spec:
       containers:
         - name: preinstall
           image: ghcr.io/neuro-inc/admission-controller-lib:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           args: ["pre-install"]
           env:
             {{- include "admission-controller-lib.env" . | nindent 12 }}

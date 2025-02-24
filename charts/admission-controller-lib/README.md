@@ -18,7 +18,6 @@ Helm charts expects next values to be set:
 
 admissionController:
   serviceName: "a service name"
-  secretNameCerts: "a secret name which will be created to store all the certs"
   webhookPath: "a webhook HTTP path which will be called by an admission controller"
   namespaceSelector: "namespace selector object in a format accepted by an admission controller"
   objectSelector: "object selector object in a format accepted by an admission controller"

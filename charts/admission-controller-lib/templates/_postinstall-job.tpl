@@ -14,7 +14,7 @@ spec:
       containers:
         - name: postinstall
           image: ghcr.io/neuro-inc/admission-controller-lib:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           args: ["post-install"]
           env:
             {{- include "admission-controller-lib.env" . | nindent 12 }}

@@ -1,6 +1,5 @@
 admissionController:
   serviceName: ""
-  secretNameCerts: ""
   webhookPath: "/mutate"
   namespaceSelector: {}
   objectSelector: {}

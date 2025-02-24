@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 async def main():
     service_name = os.environ["SERVICE_NAME"]
     webhook_path = os.environ["WEBHOOK_PATH"]
+    cert_secret_name = os.environ["CERT_SECRET_NAME"]
     object_selector = json.loads(os.environ["OBJECT_SELECTOR"])
     namespace_selector = json.loads(os.environ["NAMESPACE_SELECTOR"])
     failure_policy = os.environ["FAILURE_POLICY"]
@@ -25,7 +26,7 @@ async def main():
             await create_admission_controller(
                 kube,
                 service_name=service_name,
-                secret_name=service_name,
+                secret_name=cert_secret_name,
                 webhook_path=webhook_path,
                 object_selector=object_selector,
                 namespace_selector=namespace_selector,
@@ -35,7 +36,7 @@ async def main():
             await update_admission_controller(
                 kube,
                 service_name=service_name,
-                secret_name=service_name,
+                secret_name=cert_secret_name,
                 webhook_path=webhook_path,
                 object_selector=object_selector,
                 namespace_selector=namespace_selector,

@@ -27,6 +27,8 @@
   value: "{{ .Values.admissionController.namespaceSelector | toJson | quote }}"
 - name: FAILURE_POLICY
   value: "{{ .Values.admissionController.failurePolicy }}"
+- name: CERT_SECRET_NAME
+  value: "{{ .Values.admissionController.serviceName }}-cert"
 {{- end -}}
 
 {{- define "admission-controller-lib.kubeAuthMountRoot" -}}
