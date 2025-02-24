@@ -1,0 +1,22 @@
+[project]
+name = "admission-controller-lib"
+version = "0.1.0"
+description = "Python helper code to generate a TLS certificates and deploy the admission controller"
+authors = [
+    {name = "Apolo.us"}
+]
+license = {text = "Proprietary"}
+readme = "README.md"
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    "apolo-kube-client (>=25.2.6,<26.0.0)",
+    "cryptography (>=44.0.1,<45.0.0)"
+]
+
+[tool.poetry]
+package-mode = false
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,6 @@
+admissionController:
+  serviceName: ""
+  webhookPath: "/mutate"
+  namespaceSelector: {}
+  objectSelector: {}
+  failurePolicy: "Ignore"
