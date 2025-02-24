@@ -10,12 +10,12 @@ SECRET_PREFIX = f"{ADMISSION_CONTROLLER_PREFIX}-certs"
 
 
 def create_kube_config() -> KubeConfig:
-    endpoint_url = os.environ["NP_K8S_API_URL"]
-    auth_type = KubeClientAuthType(os.environ["NP_K8S_AUTH_TYPE"])
-    ca_path = os.environ.get("NP_K8S_CA_PATH")
+    endpoint_url = os.environ["K8S_API_URL"]
+    auth_type = KubeClientAuthType(os.environ["K8S_AUTH_TYPE"])
+    ca_path = os.environ.get("K8S_CA_PATH")
     ca_data = Path(ca_path).read_text() if ca_path else None
-    token_path = os.environ["NP_K8S_TOKEN_PATH"]
-    namespace = os.environ["NP_K8S_NS"]
+    token_path = os.environ["K8S_TOKEN_PATH"]
+    namespace = os.environ["K8S_NS"]
 
     return KubeConfig(
         endpoint_url=endpoint_url,

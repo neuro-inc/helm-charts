@@ -62,7 +62,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: "{{ include "admission-controller-lib.fullname" . }}-preinstall"
-  namespace: {{ .Release.Namespace }}
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded

@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 async def main():
     service_name = os.environ["SERVICE_NAME"]
-    secret_name = os.environ["SECRET_NAME_CERTS"]
     webhook_path = os.environ["WEBHOOK_PATH"]
     object_selector = json.loads(os.environ["OBJECT_SELECTOR"])
     namespace_selector = json.loads(os.environ["NAMESPACE_SELECTOR"])
@@ -25,22 +24,22 @@ async def main():
         try:
             await create_admission_controller(
                 kube,
-                service_name,
-                secret_name,
-                webhook_path,
-                object_selector,
-                namespace_selector,
-                failure_policy,
+                service_name=service_name,
+                secret_name=service_name,
+                webhook_path=webhook_path,
+                object_selector=object_selector,
+                namespace_selector=namespace_selector,
+                failure_policy=failure_policy,
             )
         except ResourceExists:
             await update_admission_controller(
                 kube,
-                service_name,
-                secret_name,
-                webhook_path,
-                object_selector,
-                namespace_selector,
-                failure_policy,
+                service_name=service_name,
+                secret_name=service_name,
+                webhook_path=webhook_path,
+                object_selector=object_selector,
+                namespace_selector=namespace_selector,
+                failure_policy=failure_policy,
             )
 
 

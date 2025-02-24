@@ -46,7 +46,7 @@ def generate_ca_and_server_cert(service_dns_name: str) -> dict[str, str]:
         .public_key(ca_key.public_key())
         .serial_number(x509.random_serial_number())
         .not_valid_before(now)
-        .not_valid_after(now + timedelta(days=3650))
+        .not_valid_after(now + timedelta(days=EXP_DAYS))
         .add_extension(
             x509.BasicConstraints(ca=True, path_length=None),
             critical=True
@@ -76,8 +76,8 @@ def generate_ca_and_server_cert(service_dns_name: str) -> dict[str, str]:
         .issuer_name(ca_cert.subject)
         .public_key(server_key.public_key())
         .serial_number(x509.random_serial_number())
-        .not_valid_before(datetime.utcnow())
-        .not_valid_after(datetime.utcnow() + timedelta(days=EXP_DAYS))
+        .not_valid_before(now)
+        .not_valid_after(now + timedelta(days=EXP_DAYS))
         .add_extension(alt_names, critical=False)
     )
 
@@ -102,15 +102,14 @@ def generate_ca_and_server_cert(service_dns_name: str) -> dict[str, str]:
 
 
 async def main():
-    namespace = os.environ["NP_K8S_NS"]
+    namespace = os.environ["K8S_NS"]
     service_name = os.environ["SERVICE_NAME"]
-    secret_name = os.environ["SECRET_NAME_CERTS"]
     service_dsn = f"{service_name}.{namespace}.svc"
     kube_config = create_kube_config()
 
     async with kube_client_from_config(kube_config) as kube:
         try:
-            await get_cert_secret(kube, secret_name)
+            await get_cert_secret(kube, secret_name=service_name)
         except ResourceNotFound:
             # mean we need to create certs
             pass
@@ -120,7 +119,7 @@ async def main():
 
         # let's create certificates, and put them into a secret
         certs = generate_ca_and_server_cert(service_dns_name=service_dsn)
-        await create_cert_secret(kube, secret_name, certs)
+        await create_cert_secret(kube, secret_name=service_name, certs=certs)
 
 
 if __name__ == '__main__':

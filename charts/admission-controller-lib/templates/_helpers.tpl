@@ -7,20 +7,18 @@
 {{- end -}}
 
 {{- define "admission-controller-lib.env" -}}
-- name: NP_K8S_API_URL
+- name: K8S_API_URL
   value: https://kubernetes.default:443
-- name: NP_K8S_AUTH_TYPE
+- name: K8S_AUTH_TYPE
   value: token
-- name: NP_K8S_CA_PATH
+- name: K8S_CA_PATH
   value: {{ include "admission-controller-lib.kubeAuthMountRoot" . }}/ca.crt
-- name: NP_K8S_TOKEN_PATH
+- name: K8S_TOKEN_PATH
   value: {{ include "admission-controller-lib.kubeAuthMountRoot" . }}/token
-- name: NP_K8S_NS
+- name: K8S_NS
   value: {{ .Release.Namespace | default "default" | quote }}
 - name: SERVICE_NAME
   value: "{{ .Values.admissionController.serviceName }}"
-- name: SECRET_NAME_CERTS
-  value: "{{ .Values.admissionController.secretNameCerts }}"
 - name: WEBHOOK_PATH
   value: "{{ .Values.admissionController.webhookPath }}"
 - name: OBJECT_SELECTOR

@@ -3,7 +3,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: "{{ include "admission-controller-lib.fullname" . }}-postinstall"
-  namespace: "{{ .Release.Namespace }}"
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-delete-policy": hook-succeeded
