@@ -18,4 +18,8 @@ spec:
           args: ["post-install"]
           env:
             {{- include "admission-controller-lib.env" . | nindent 12 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end -}}
