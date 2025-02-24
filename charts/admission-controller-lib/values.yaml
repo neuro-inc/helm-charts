@@ -1,3 +1,5 @@
+imagePullSecrets: []
+
 admissionController:
   serviceName: ""
   webhookPath: "/mutate"
