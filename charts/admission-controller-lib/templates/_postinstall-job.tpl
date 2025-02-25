@@ -1,11 +1,16 @@
 {{- define "admission-controller-lib.postinstallJob" -}}
+
+{{ include "admission-controller-lib.rbac" . }}
+
+---
+
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: "{{ include "admission-controller-lib.fullname" . }}-postinstall"
   annotations:
     "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   template:
     spec:
