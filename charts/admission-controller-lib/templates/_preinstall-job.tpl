@@ -1,6 +1,6 @@
 {{- define "admission-controller-lib.preinstallJob" -}}
 
-{{ include "admission-controller-lib.rbac" . }}
+{{ include "admission-controller-lib.preinstallRBAC" . }}
 
 ---
 

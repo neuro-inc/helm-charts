@@ -1,4 +1,4 @@
-{{- define "admission-controller-lib.rbac" -}}
+{{- define "admission-controller-lib.preinstallRBAC" -}}
 
 apiVersion: v1
 kind: ServiceAccount
@@ -22,18 +22,6 @@ metadata:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 rules:
-  - apiGroups: ["admissionregistration.k8s.io"]
-    resources:
-      - mutatingwebhookconfigurations
-      - validatingwebhookconfigurations
-    verbs:
-      - get
-      - list
-      - watch
-      - create
-      - update
-      - patch
-
   - apiGroups: [""]
     resources:
       - secrets
