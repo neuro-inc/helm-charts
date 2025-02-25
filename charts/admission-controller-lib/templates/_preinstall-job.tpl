@@ -6,6 +6,10 @@ metadata:
   name: admission-controller-lib
   labels:
     {{- include "admission-controller-lib.labels.standard" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "-3"
 
 ---
 
@@ -15,6 +19,10 @@ metadata:
   name: admission-controller-lib
   labels:
     {{- include "admission-controller-lib.labels.standard" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "-2"
 rules:
   - apiGroups: ["admissionregistration.k8s.io"]
     resources:
@@ -47,6 +55,10 @@ metadata:
   name: admission-controller-lib
   labels:
     {{- include "admission-controller-lib.labels.standard" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "-1"
 subjects:
   - kind: ServiceAccount
     name: admission-controller-lib
