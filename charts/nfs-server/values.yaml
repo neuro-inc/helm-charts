@@ -3,13 +3,19 @@ replicas: 1
 # imagePullSecrets: []
 
 image:
-  repository: k8s.gcr.io/volume-nfs
-  tag: 0.8
+  repository: gists/nfs-server
+  tag: 2.6.4
   pullPolicy: IfNotPresent
 
 args: []
 
-env: []
+env:
+  - name: NFS_DIR
+    value: /exports
+  - name: NFS_DOMAIN
+    value: '*'
+  - name: NFS_OPTION
+    value: 'fsid=0,rw,sync,insecure,all_squash,anonuid=0,anongid=0,no_subtree_check,nohide'
 
 service:
   type: ClusterIP
