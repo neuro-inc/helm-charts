@@ -84,8 +84,8 @@ _acme_install_cert() {
   if [ ! -z "$_secret" ]; then
     kubectl create secret generic $_secret \
       -n $_secret_namespace \
-      --from-file=cert.crt=$_path/fullchain.pem \
-      --from-file=cert.key=$_path/key.pem \
+      --from-file=tls.crt=$_path/fullchain.pem \
+      --from-file=tls.key=$_path/key.pem \
       --save-config \
       --dry-run \
       -o yaml \

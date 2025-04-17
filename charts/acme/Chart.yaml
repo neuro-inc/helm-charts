@@ -1,5 +1,5 @@
 apiVersion: v2
-version: 1.3.0
-appVersion: 1.3.0
+version: 1.3.1
+appVersion: 1.3.1
 name: acme
 description: SSL certificate automatic issue and renewal using acme.sh script. https://github.com/acmesh-official/acme.sh
