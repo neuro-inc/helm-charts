@@ -58,10 +58,6 @@ spec:
             --secret {{ .Values.acme.sslCertSecretName }} \
             --secret-namespace {{ .Release.Namespace }} \
             {{- end }}
-            {{- if .Values.acme.rolloutDeploymentName }}
-            --rollout-deployment {{ .Values.acme.rolloutDeploymentName }} \
-            --rollout-deployment-namespace {{ .Release.Namespace }} \
-            {{- end }}
             &
 
           # Start cron daemon, it is responsible for cert renewal
