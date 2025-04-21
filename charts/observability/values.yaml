@@ -289,16 +289,19 @@ alloy-logs:
             regex         = "([0-9a-z-.]+?)(-[0-9a-f]{8,10})?"
             target_label  = "__tmp_controller_name"
           }
+
           rule {
             source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name", "__meta_kubernetes_pod_label_app", "__tmp_controller_name", "__meta_kubernetes_pod_name"]
             regex         = "^;*([^;]+)(;.*)?$"
             target_label  = "app"
           }
+
           rule {
             source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_instance", "__meta_kubernetes_pod_label_instance"]
             regex         = "^;*([^;]+)(;.*)?$"
             target_label  = "instance"
           }
+
           rule {
             source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_component", "__meta_kubernetes_pod_label_component"]
             regex         = "^;*([^;]+)(;.*)?$"
@@ -337,6 +340,7 @@ alloy-logs:
             target_label  = "__path__"
             replacement   = "/var/log/pods/*$1/*.log"
           }
+
           rule {
             source_labels = ["__meta_kubernetes_pod_annotationpresent_kubernetes_io_config_hash", "__meta_kubernetes_pod_annotation_kubernetes_io_config_hash", "__meta_kubernetes_pod_container_name"]
             separator     = "/"
@@ -369,16 +373,16 @@ alloy-logs:
 
           stage.match {
             selector = "{pod=~\".+\"} |~ \"^\\\\d{4}-\\\\d{2}-\\\\d{2}T\\\\d{2}:\\\\d{2}:\\\\d{2}(?:\\\\.\\\\d+)?Z?\\\\s+\\\\S+\\\\s+\\\\S+\\\\s+(?:\\\\[[^\\\\]]*\\\\])?\\\\s+.*\""
-            
+
             stage.regex {
               expression = "(?s)(?P<timestamp>\\S+)\\s+(?P<level>\\S+)\\s+(?P<logger>\\S+)\\s+(?:\\[(?P<context>[^\\]]*)\\])?\\s+(?P<message>.*)"
             }
-            
+
             stage.timestamp {
               source = "timestamp"
               format = "RFC3339"
             }
-            
+
             stage.labels {
               values = {
                 context = "",
@@ -386,13 +390,13 @@ alloy-logs:
                 logger  = "",
               }
             }
-            
+
             stage.structured_metadata {
               values = {
                 level   = "",
               }
             }
-            
+
             stage.output {
               source = "message"
             }
@@ -402,17 +406,17 @@ alloy-logs:
             labels           = ["container", "stream", "node_name", "pod", "level", "logger", "context"]
             ingest_timestamp = false
           }
-          
+
           stage.label_keep {
             values = ["app", "instance", "namespace"]
           }
         }
-        
+
         loki.source.file "kubernetes_pods" {
           targets               = local.file_match.kubernetes_pods.targets
           forward_to            = [loki.process.kubernetes_pods.receiver]
         }
-        
+
         loki.process "journal" {
           forward_to = [loki.write.default.receiver]
           
@@ -421,7 +425,7 @@ alloy-logs:
             ingest_timestamp = false
           }
         }
-        
+
         discovery.relabel "journal" {
           targets = []
           
@@ -429,13 +433,13 @@ alloy-logs:
             source_labels = ["__journal__systemd_unit"]
             target_label  = "unit"
           }
-          
+
           rule {
             source_labels = ["__journal__hostname"]
             target_label  = "node_name"
           }
         }
-        
+
         loki.source.journal "journal" {
           max_age       = "12h0m0s"
           path          = "/var/log/journal"
