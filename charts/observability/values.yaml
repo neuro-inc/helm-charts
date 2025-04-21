@@ -348,11 +348,25 @@ alloy-logs:
             target_label  = "__path__"
             replacement   = "/var/log/pods/*$1/*.log"
           }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_platform_apolo_us_org"]
+            target_label  = "org"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_platform_apolo_us_project"]
+            target_label  = "project"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_platform_apolo_us_app"]
+            target_label  = "app_id"
+          }
         }
 
-        loki.source.kubernetes "kubernetes_pods" {
-          targets    = discovery.relabel.kubernetes_pods.output
-          forward_to = [loki.process.kubernetes_pods.receiver]
+        local.file_match "kubernetes_pods" {
+          path_targets = discovery.relabel.kubernetes_pods.output
         }
 
         loki.process "kubernetes_pods" {
@@ -403,7 +417,7 @@ alloy-logs:
           }
 
           stage.pack {
-            labels           = ["container", "stream", "node_name", "pod", "level", "logger", "context"]
+            labels           = ["stream", "node_name", "level", "logger", "context"]
             ingest_timestamp = false
           }
 
@@ -419,7 +433,7 @@ alloy-logs:
 
         loki.process "journal" {
           forward_to = [loki.write.default.receiver]
-          
+
           stage.pack {
             labels           = ["unit", "node_name"]
             ingest_timestamp = false
@@ -428,7 +442,7 @@ alloy-logs:
 
         discovery.relabel "journal" {
           targets = []
-          
+
           rule {
             source_labels = ["__journal__systemd_unit"]
             target_label  = "unit"
