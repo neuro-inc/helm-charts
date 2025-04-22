@@ -351,17 +351,17 @@ alloy-logs:
 
           rule {
             source_labels = ["__meta_kubernetes_pod_label_platform_apolo_us_org"]
-            target_label  = "org"
+            target_label  = "apolo_org_name"
           }
 
           rule {
             source_labels = ["__meta_kubernetes_pod_label_platform_apolo_us_project"]
-            target_label  = "project"
+            target_label  = "apolo_project_name"
           }
 
           rule {
             source_labels = ["__meta_kubernetes_pod_label_platform_apolo_us_app"]
-            target_label  = "app_id"
+            target_label  = "apolo_app_id"
           }
         }
 
