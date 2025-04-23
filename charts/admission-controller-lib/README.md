@@ -22,6 +22,7 @@ admissionController:
   namespaceSelector: "namespace selector object in a format accepted by an admission controller"
   objectSelector: "object selector object in a format accepted by an admission controller"
   failurePolicy: "one of `Ignore` or `Fail`"
+  reinvocationPolicy: "one of `Never` or `IfNeeded`"
 
 ```
 

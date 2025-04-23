@@ -5,8 +5,11 @@ import os
 
 from apolo_kube_client.client import kube_client_from_config
 from apolo_kube_client.errors import ResourceExists
-
-from hooks.kube import create_kube_config, create_admission_controller, update_admission_controller
+from hooks.kube import (
+    create_admission_controller,
+    create_kube_config,
+    update_admission_controller,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +21,7 @@ async def main():
     object_selector = json.loads(os.environ["OBJECT_SELECTOR"])
     namespace_selector = json.loads(os.environ["NAMESPACE_SELECTOR"])
     failure_policy = os.environ["FAILURE_POLICY"]
+    reinvocation_policy = os.environ["REINVOCATION_POLICY"]
 
     kube_config = create_kube_config()
 
@@ -31,6 +35,7 @@ async def main():
                 object_selector=object_selector,
                 namespace_selector=namespace_selector,
                 failure_policy=failure_policy,
+                reinvocation_policy=reinvocation_policy,
             )
         except ResourceExists:
             await update_admission_controller(
@@ -41,8 +46,9 @@ async def main():
                 object_selector=object_selector,
                 namespace_selector=namespace_selector,
                 failure_policy=failure_policy,
+                reinvocation_policy=reinvocation_policy,
             )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())
