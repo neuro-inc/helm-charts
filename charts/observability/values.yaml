@@ -422,7 +422,7 @@ alloy-logs:
           }
 
           stage.label_keep {
-            values = ["app", "instance", "namespace"]
+            values = ["app", "instance", "namespace", "apolo_org_name", "apolo_project_name", "apolo_app_id"]
           }
         }
 
