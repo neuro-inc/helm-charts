@@ -348,6 +348,21 @@ alloy-logs:
             target_label  = "__path__"
             replacement   = "/var/log/pods/*$1/*.log"
           }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_platform_apolo_us_org"]
+            target_label  = "apolo_org_name"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_platform_apolo_us_project"]
+            target_label  = "apolo_project_name"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_pod_label_platform_apolo_us_app"]
+            target_label  = "apolo_app_id"
+          }
         }
 
         local.file_match "kubernetes_pods" {
@@ -402,12 +417,12 @@ alloy-logs:
           }
 
           stage.pack {
-            labels           = ["container", "stream", "node_name", "pod", "level", "logger", "context"]
+            labels           = ["stream", "node_name", "level", "logger", "context"]
             ingest_timestamp = false
           }
 
           stage.label_keep {
-            values = ["app", "instance", "namespace"]
+            values = ["app", "instance", "namespace", "pod", "container", "apolo_org_name", "apolo_project_name", "apolo_app_id"]
           }
         }
 
