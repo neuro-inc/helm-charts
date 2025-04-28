@@ -29,10 +29,7 @@ def create_kube_config() -> KubeConfig:
     )
 
 
-def gen_secrets_url(
-        kube: KubeClient,
-        secret_name: str | None = None
-) -> str:
+def gen_secrets_url(kube: KubeClient, secret_name: str | None = None) -> str:
     """Generates kubernetes API URL for secrets"""
     url = f"{kube.namespace_url}/secrets"
     if secret_name is not None:
@@ -41,8 +38,7 @@ def gen_secrets_url(
 
 
 def gen_admission_controller_url(
-        kube: KubeClient,
-        admission_controller_name: str | None = None
+    kube: KubeClient, admission_controller_name: str | None = None
 ) -> str:
     """Generates kubernetes API URL for an admission controller"""
     url = f"{kube._base_url}/apis/admissionregistration.k8s.io/v1/mutatingwebhookconfigurations"  # noqa
@@ -52,8 +48,8 @@ def gen_admission_controller_url(
 
 
 async def get_cert_secret(
-        kube: KubeClient,
-        secret_name: str,
+    kube: KubeClient,
+    secret_name: str,
 ) -> dict[str, str]:
     """Returns a cert secret contents"""
     url = gen_secrets_url(kube, secret_name)
@@ -62,9 +58,9 @@ async def get_cert_secret(
 
 
 async def create_cert_secret(
-        kube: KubeClient,
-        secret_name: str,
-        certs: dict[str, str],
+    kube: KubeClient,
+    secret_name: str,
+    certs: dict[str, str],
 ):
     """Creates a certificates secret"""
     payload = {
@@ -74,12 +70,12 @@ async def create_cert_secret(
         "data": certs,
         "type": "kubernetes.io/tls",
     }
-    await kube.post(f'{kube.namespace_url}/secrets', json=payload)
+    await kube.post(f"{kube.namespace_url}/secrets", json=payload)
 
 
 async def get_admission_controller(
-        kube: KubeClient,
-        service_name: str,
+    kube: KubeClient,
+    service_name: str,
 ) -> dict[str, Any]:
     """Returns an admission controller"""
     admission_controller_name = f"{ADMISSION_CONTROLLER_PREFIX}-{service_name}"
@@ -88,15 +84,15 @@ async def get_admission_controller(
 
 
 def gen_webhook_payload(
-        namespace: str,
-        service_name: str,
-        path: str,
-        ca_bundle: str,
-        failure_policy: str,
-        object_selector: dict[str, Any],
-        namespace_selector: dict[str, Any],
+    namespace: str,
+    service_name: str,
+    path: str,
+    ca_bundle: str,
+    failure_policy: str,
+    reinvocation_policy: str,
+    object_selector: dict[str, Any],
+    namespace_selector: dict[str, Any],
 ) -> dict[str, Any]:
-
     webhook_name = f"{service_name}.apolo.us"
 
     webhook = {
@@ -104,12 +100,8 @@ def gen_webhook_payload(
         "admissionReviewVersions": ["v1", "v1beta1"],
         "sideEffects": "None",
         "clientConfig": {
-            "service": {
-                "namespace": namespace,
-                "name": service_name,
-                "path": path
-            },
-            "caBundle": ca_bundle
+            "service": {"namespace": namespace, "name": service_name, "path": path},
+            "caBundle": ca_bundle,
         },
         "rules": [
             {
@@ -120,6 +112,7 @@ def gen_webhook_payload(
             }
         ],
         "failurePolicy": failure_policy,
+        "reinvocationPolicy": reinvocation_policy,
     }
     if object_selector:
         webhook["objectSelector"] = object_selector
@@ -129,13 +122,14 @@ def gen_webhook_payload(
 
 
 async def create_admission_controller(
-        kube: KubeClient,
-        service_name: str,
-        secret_name: str,
-        webhook_path: str,
-        object_selector: dict[str, Any],
-        namespace_selector: dict[str, Any],
-        failure_policy: str,
+    kube: KubeClient,
+    service_name: str,
+    secret_name: str,
+    webhook_path: str,
+    object_selector: dict[str, Any],
+    namespace_selector: dict[str, Any],
+    failure_policy: str,
+    reinvocation_policy: str,
 ) -> dict[str, Any]:
     url = gen_admission_controller_url(kube)
     admission_controller_name = f"{ADMISSION_CONTROLLER_PREFIX}-{service_name}"
@@ -148,6 +142,7 @@ async def create_admission_controller(
         path=webhook_path,
         ca_bundle=ca_bundle,
         failure_policy=failure_policy,
+        reinvocation_policy=reinvocation_policy,
         object_selector=object_selector,
         namespace_selector=namespace_selector,
     )
@@ -155,10 +150,8 @@ async def create_admission_controller(
     payload = {
         "apiVersion": "admissionregistration.k8s.io/v1",
         "kind": "MutatingWebhookConfiguration",
-        "metadata": {
-            "name": admission_controller_name
-        },
-        "webhooks": [webhook]
+        "metadata": {"name": admission_controller_name},
+        "webhooks": [webhook],
     }
 
     # todo: ensure that service is already responding to pings ?
@@ -166,13 +159,14 @@ async def create_admission_controller(
 
 
 async def update_admission_controller(
-        kube: KubeClient,
-        service_name: str,
-        secret_name: str,
-        webhook_path: str,
-        object_selector: dict[str, Any],
-        namespace_selector: dict[str, Any],
-        failure_policy: str,
+    kube: KubeClient,
+    service_name: str,
+    secret_name: str,
+    webhook_path: str,
+    object_selector: dict[str, Any],
+    namespace_selector: dict[str, Any],
+    failure_policy: str,
+    reinvocation_policy: str,
 ) -> dict[str, Any] | None:
     admission_controller_name = f"{ADMISSION_CONTROLLER_PREFIX}-{service_name}"
     url = gen_admission_controller_url(kube, admission_controller_name)
@@ -185,16 +179,13 @@ async def update_admission_controller(
         path=webhook_path,
         ca_bundle=ca_bundle,
         failure_policy=failure_policy,
+        reinvocation_policy=reinvocation_policy,
         object_selector=object_selector,
         namespace_selector=namespace_selector,
     )
 
-    patch_body = {
-        "webhooks": [webhook]
-    }
+    patch_body = {"webhooks": [webhook]}
 
     return await kube.patch(
-        url,
-        json=patch_body,
-        headers={"Content-Type": "application/merge-patch+json"}
+        url, json=patch_body, headers={"Content-Type": "application/merge-patch+json"}
     )

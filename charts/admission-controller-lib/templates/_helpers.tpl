@@ -27,6 +27,8 @@
   value: {{ .Values.admissionController.namespaceSelector | toJson | quote }}
 - name: FAILURE_POLICY
   value: "{{ .Values.admissionController.failurePolicy }}"
+- name: REINVOCATION_POLICY
+  value: "{{ .Values.admissionController.reinvocationPolicy }}"
 - name: CERT_SECRET_NAME
   value: "{{ .Values.admissionController.serviceName }}-cert"
 {{- end -}}

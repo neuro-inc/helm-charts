@@ -6,3 +6,4 @@ admissionController:
   namespaceSelector: {}
   objectSelector: {}
   failurePolicy: "Ignore"
+  reinvocationPolicy: "Never"

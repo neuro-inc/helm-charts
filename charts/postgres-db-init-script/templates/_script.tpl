@@ -120,6 +120,11 @@ if [ ! -z "$NP_MIGRATIONS_RUNNER_USER" ] && [ ! -z "$NP_MIGRATIONS_RUNNER_PASSWO
     # Allow user to create new schemas
     $psql_ -o /dev/null -ac "GRANT CREATE ON DATABASE $NP_DATABASE TO $NP_MIGRATIONS_RUNNER_USER"
 
+    if [ "$($psql_ -tAc "SELECT 1 FROM information_schema.schemata WHERE schema_name = '$NP_POSTGRES_SCHEMA';")" = "1" ]; then
+        # Grant all privileges in schema
+        $psql_ -o /dev/null -ac "GRANT ALL ON SCHEMA $NP_POSTGRES_SCHEMA TO $NP_MIGRATIONS_RUNNER_USER;"
+    fi
+
     $psql_ -tA <<EOF | psql -o /dev/null -a
 SELECT format(
 'ALTER TABLE %I.%I OWNER TO %I;',

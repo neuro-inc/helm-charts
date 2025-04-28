@@ -16,8 +16,6 @@ _notify_hook=""
 _force_option=""
 _secret=()
 _secret_namespace="default"
-_rollout_deployment=""
-_rollout_deployment_namespace="default"
 
 _acme_install() {
   curl https://get.acme.sh | sh -s email="$_email"
@@ -48,10 +46,6 @@ _acme_issue() {
     _renew_hook="$_renew_hook --secret $_secret --secret-namespace $_secret_namespace"
   fi
 
-  if [ ! -z "$_rollout_deployment" ]; then
-    _renew_hook="$_renew_hook --rollout-deployment $_rollout_deployment --rollout-deployment-namespace $_rollout_deployment_namespace"
-  fi
-
   acme.sh --issue \
     --keylength ec-256 \
     --dns dns_$_dns \
@@ -66,9 +60,7 @@ _acme_issue() {
     $_debug_option \
     -d "${_domains[0]}" \
     --secret "$_secret" \
-    --secret-namespace "$_secret_namespace" \
-    --rollout-deployment "$_rollout_deployment" \
-    --rollout-deployment-namespace "$_rollout_deployment_namespace"
+    --secret-namespace "$_secret_namespace"
 }
 
 _acme_install_cert() {
@@ -92,17 +84,13 @@ _acme_install_cert() {
   if [ ! -z "$_secret" ]; then
     kubectl create secret generic $_secret \
       -n $_secret_namespace \
-      --from-file=cert.crt=$_path/fullchain.pem \
-      --from-file=cert.key=$_path/key.pem \
+      --from-file=tls.crt=$_path/fullchain.pem \
+      --from-file=tls.key=$_path/key.pem \
       --save-config \
       --dry-run \
       -o yaml \
       2>/dev/null | \
     kubectl apply -f -
-  fi
-
-  if [ ! -z "$_rollout_deployment" ]; then
-    kubectl rollout restart deployment/$_rollout_deployment -n $_rollout_deployment_namespace
   fi
 }
 
@@ -152,16 +140,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     --secret-namespace)
       _secret_namespace="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    --rollout-deployment)
-      _rollout_deployment="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    --rollout-deployment-namespace)
-      _rollout_deployment_namespace="$2"
       shift # past argument
       shift # past value
       ;;

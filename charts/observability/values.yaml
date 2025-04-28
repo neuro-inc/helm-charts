@@ -953,3 +953,7 @@ kube-prometheus-stack:
         cpu: 10m
         memory: 20Mi
 
+    prometheus:
+      monitor:
+        additionalLabels:
+          platform.apolo.us/scrape-metrics: "true"
