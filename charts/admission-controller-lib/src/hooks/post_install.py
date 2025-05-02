@@ -21,7 +21,7 @@ async def main():
     object_selector = json.loads(os.environ["OBJECT_SELECTOR"])
     namespace_selector = json.loads(os.environ["NAMESPACE_SELECTOR"])
     failure_policy = os.environ["FAILURE_POLICY"]
-    reinvocation_policy = os.environ["REINVOCATION_POLICY"]
+    reinvocation_policy = os.environ.get("REINVOCATION_POLICY")
 
     kube_config = create_kube_config()
 
