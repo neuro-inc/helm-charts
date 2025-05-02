@@ -89,7 +89,7 @@ def gen_webhook_payload(
     path: str,
     ca_bundle: str,
     failure_policy: str,
-    reinvocation_policy: str,
+    reinvocation_policy: str | None,
     object_selector: dict[str, Any],
     namespace_selector: dict[str, Any],
 ) -> dict[str, Any]:
@@ -112,8 +112,9 @@ def gen_webhook_payload(
             }
         ],
         "failurePolicy": failure_policy,
-        "reinvocationPolicy": reinvocation_policy,
     }
+    if reinvocation_policy:
+        webhook["reinvocationPolicy"] = reinvocation_policy
     if object_selector:
         webhook["objectSelector"] = object_selector
     if namespace_selector:
@@ -129,7 +130,7 @@ async def create_admission_controller(
     object_selector: dict[str, Any],
     namespace_selector: dict[str, Any],
     failure_policy: str,
-    reinvocation_policy: str,
+    reinvocation_policy: str | None,
 ) -> dict[str, Any]:
     url = gen_admission_controller_url(kube)
     admission_controller_name = f"{ADMISSION_CONTROLLER_PREFIX}-{service_name}"
@@ -166,7 +167,7 @@ async def update_admission_controller(
     object_selector: dict[str, Any],
     namespace_selector: dict[str, Any],
     failure_policy: str,
-    reinvocation_policy: str,
+    reinvocation_policy: str | None,
 ) -> dict[str, Any] | None:
     admission_controller_name = f"{ADMISSION_CONTROLLER_PREFIX}-{service_name}"
     url = gen_admission_controller_url(kube, admission_controller_name)
