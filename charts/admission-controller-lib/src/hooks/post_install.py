@@ -20,6 +20,7 @@ async def main():
     cert_secret_name = os.environ["CERT_SECRET_NAME"]
     object_selector = json.loads(os.environ["OBJECT_SELECTOR"])
     namespace_selector = json.loads(os.environ["NAMESPACE_SELECTOR"])
+    rules = json.loads(os.environ.get("RULES", "[]"))
     failure_policy = os.environ["FAILURE_POLICY"]
     reinvocation_policy = os.environ.get("REINVOCATION_POLICY")
 
@@ -34,6 +35,7 @@ async def main():
                 webhook_path=webhook_path,
                 object_selector=object_selector,
                 namespace_selector=namespace_selector,
+                rules=rules,
                 failure_policy=failure_policy,
                 reinvocation_policy=reinvocation_policy,
             )
@@ -45,6 +47,7 @@ async def main():
                 webhook_path=webhook_path,
                 object_selector=object_selector,
                 namespace_selector=namespace_selector,
+                rules=rules,
                 failure_policy=failure_policy,
                 reinvocation_policy=reinvocation_policy,
             )

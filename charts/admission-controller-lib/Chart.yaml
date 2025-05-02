@@ -1,6 +1,6 @@
 apiVersion: v2
-version: 0.1.9
-appVersion: 0.1.9
+version: 0.1.10
+appVersion: 0.1.10
 name: admission-controller-lib
 description: A Helm library chart that provides partial templates for an admission controller
 type: library
