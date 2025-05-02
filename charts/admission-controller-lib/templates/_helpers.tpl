@@ -25,6 +25,8 @@
   value: {{ .Values.admissionController.objectSelector | toJson | quote }}
 - name: NAMESPACE_SELECTOR
   value: {{ .Values.admissionController.namespaceSelector | toJson | quote }}
+- name: RULES
+  value: {{ .Values.admissionController.rules | toJson | quote }}
 - name: FAILURE_POLICY
   value: "{{ .Values.admissionController.failurePolicy }}"
 - name: REINVOCATION_POLICY

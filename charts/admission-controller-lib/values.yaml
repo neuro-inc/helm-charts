@@ -5,5 +5,11 @@ admissionController:
   webhookPath: "/mutate"
   namespaceSelector: {}
   objectSelector: {}
+  rules:
+  - apiGroups: [""]
+    apiVersions: [v1]
+    operations: [CREATE]
+    resources: [pods]
+    scope: '*'
   failurePolicy: "Ignore"
   reinvocationPolicy: "Never"

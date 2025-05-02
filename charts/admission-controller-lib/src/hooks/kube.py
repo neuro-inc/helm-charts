@@ -92,8 +92,18 @@ def gen_webhook_payload(
     reinvocation_policy: str | None,
     object_selector: dict[str, Any],
     namespace_selector: dict[str, Any],
+    rules: list[dict[str, Any]],
 ) -> dict[str, Any]:
     webhook_name = f"{service_name}.apolo.us"
+
+    rules = rules or [
+        {
+            "operations": ["CREATE"],
+            "apiGroups": [""],
+            "apiVersions": ["v1"],
+            "resources": ["pods"],
+        }
+    ]
 
     webhook = {
         "name": webhook_name,
@@ -103,14 +113,7 @@ def gen_webhook_payload(
             "service": {"namespace": namespace, "name": service_name, "path": path},
             "caBundle": ca_bundle,
         },
-        "rules": [
-            {
-                "operations": ["CREATE"],
-                "apiGroups": [""],
-                "apiVersions": ["v1"],
-                "resources": ["pods"],
-            }
-        ],
+        "rules": rules,
         "failurePolicy": failure_policy,
     }
     if reinvocation_policy:
@@ -129,6 +132,7 @@ async def create_admission_controller(
     webhook_path: str,
     object_selector: dict[str, Any],
     namespace_selector: dict[str, Any],
+    rules: list[dict[str, Any]],
     failure_policy: str,
     reinvocation_policy: str | None,
 ) -> dict[str, Any]:
@@ -146,6 +150,7 @@ async def create_admission_controller(
         reinvocation_policy=reinvocation_policy,
         object_selector=object_selector,
         namespace_selector=namespace_selector,
+        rules=rules,
     )
 
     payload = {
@@ -166,6 +171,7 @@ async def update_admission_controller(
     webhook_path: str,
     object_selector: dict[str, Any],
     namespace_selector: dict[str, Any],
+    rules: list[dict[str, Any]],
     failure_policy: str,
     reinvocation_policy: str | None,
 ) -> dict[str, Any] | None:
@@ -183,6 +189,7 @@ async def update_admission_controller(
         reinvocation_policy=reinvocation_policy,
         object_selector=object_selector,
         namespace_selector=namespace_selector,
+        rules=rules,
     )
 
     patch_body = {"webhooks": [webhook]}
