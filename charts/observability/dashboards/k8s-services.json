@@ -238,8 +238,8 @@
     },
     "timepicker": {},
     "timezone": "browser",
-    "title": "test - failing services",
-    "uid": "fendyhif3yrr4d",
+    "title": "K8s Services",
+    "uid": "k8s-services",
     "version": 2,
     "weekStart": ""
   }
