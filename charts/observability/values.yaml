@@ -800,7 +800,66 @@ alloy-uptime:
             enabled = true
           }
         }
-        
+
+        discovery.relabel "public_endpoints" {
+          targets = discovery.kubernetes.default.targets
+
+          rule {
+            source_labels = [
+              "__meta_kubernetes_ingress_scheme",
+              "__address__",
+              "__meta_kubernetes_ingress_path",
+            ]
+
+            regex        = "(.+);(.+);(.+)"
+            replacement  = "https://${2}${3}"
+            target_label = "__param_target"
+          }
+
+          rule {
+            source_labels = ["__param_target"]
+            target_label = "target"
+          }
+
+          rule {
+            target_label = "__param_module"
+            replacement  = "http_2xx"
+          }
+
+          rule {
+            target_label = "__address__"
+            replacement = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+
+          rule {
+            target_label = "__metrics_path__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+
+          rule {
+            target_label = "job"
+            replacement  = "public_endpoints"
+          }
+
+        }
+
+        prometheus.scrape "public_endpoints" {
+          targets    = discovery.relabel.public_endpoints.output
+          forward_to = [prometheus.remote_write.default.receiver]
+
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
+
+          clustering {
+            enabled = true
+          }
+        }
+
         discovery.relabel "services" {
           targets = discovery.kubernetes.services.targets
 
@@ -857,6 +916,608 @@ alloy-uptime:
           scrape_interval = "30s"
           scrape_timeout  = "30s"
 
+          clustering {
+            enabled = true
+          }
+        }
+
+        discovery.relabel "api_v1_ping" {
+          targets = discovery.kubernetes.services.targets
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            regex         = "platform"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            regex         = "platform-.*"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_port_number"]
+            regex         = "80|443|3000|8080|7860|8000"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__address__"]
+            target_label  = "__param_target"
+            regex         = "(.*)"
+            replacement   = "http://${1}/api/v1/ping"
+          }
+
+          rule {
+            source_labels = ["__param_path"]
+            regex         = ""
+            target_label  = "__param_path"
+            replacement   = "/api/v1/ping"
+          }
+          
+          rule {
+            target_label = "__param_module"
+            replacement  = "http_2xx"
+          }
+
+          rule {
+            source_labels = ["__param_target"]
+            target_label  = "target"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            target_label  = "service"
+          }
+
+          rule {
+            target_label = "__address__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+
+          rule {
+            target_label = "__metrics_path__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+
+          rule {
+            target_label = "job"
+            replacement  = "apis_v1"
+          }
+        }
+
+        prometheus.scrape "api_v1_ping" {
+          targets         = discovery.relabel.api_v1_ping.output
+          forward_to      = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
+
+          clustering {
+            enabled = true
+          }
+        }
+
+        discovery.relabel "apis_admin_v1_ping" {
+          targets = discovery.kubernetes.services.targets
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            regex         = "platform"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            regex         = "platform-.*"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_port_number"]
+            regex         = "80|443|3000|8080|7860|8000"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__address__"]
+            target_label  = "__param_target"
+            regex         = "(.*)"
+            replacement   = "http://${1}/apis/admin/v1/ping"
+          }
+
+          rule {
+            source_labels = ["__param_path"]
+            regex         = ""
+            target_label  = "__param_path"
+            replacement   = "/apis/admin/v1/ping"
+          }
+          
+          rule {
+            target_label = "__param_module"
+            replacement  = "http_2xx"
+          }
+
+          rule {
+            source_labels = ["__param_target"]
+            target_label  = "target"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            target_label  = "service"
+          }
+
+          rule {
+            target_label = "__address__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+
+          rule {
+            target_label = "__metrics_path__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+
+          rule {
+            target_label = "job"
+            replacement  = "apis_admin"
+          }
+        }
+
+        prometheus.scrape "apis_admin_v1_ping" {
+          targets         = discovery.relabel.apis_admin_v1_ping.output
+          forward_to      = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
+
+          clustering {
+            enabled = true
+          }
+        }
+
+        discovery.relabel "oauth_ping" {
+          targets = discovery.kubernetes.services.targets
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            regex         = "platform"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            regex         = "platform-.*"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_port_number"]
+            regex         = "80|443|3000|8080|7860|8000"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__address__"]
+            target_label  = "__param_target"
+            regex         = "(.*)"
+            replacement   = "http://${1}/oauth/ping"
+          }
+
+          rule {
+            source_labels = ["__param_path"]
+            regex         = ""
+            target_label  = "__param_path"
+            replacement   = "/oauth/ping"
+          }
+          
+          rule {
+            target_label = "__param_module"
+            replacement  = "http_2xx"
+          }
+
+          rule {
+            source_labels = ["__param_target"]
+            target_label  = "target"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            target_label  = "service"
+          }
+
+          rule {
+            target_label = "__address__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+
+          rule {
+            target_label = "__metrics_path__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+
+          rule {
+            target_label = "job"
+            replacement  = "apis_oauth"
+          }
+        }
+
+        prometheus.scrape "oauth_ping" {
+          targets         = discovery.relabel.oauth_ping.output
+          forward_to      = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
+
+          clustering {
+            enabled = true
+          }
+        }
+
+        discovery.relabel "apis_serviceversions_v1_ping" {
+          targets = discovery.kubernetes.services.targets
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            regex         = "platform"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            regex         = "platform-.*"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_port_number"]
+            regex         = "80|443|3000|8080|7860|8000"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__address__"]
+            target_label  = "__param_target"
+            regex         = "(.*)"
+            replacement   = "http://${1}/apis/serviceversions/v1/ping"
+          }
+
+          rule {
+            source_labels = ["__param_path"]
+            regex         = ""
+            target_label  = "__param_path"
+            replacement   = "/apis/serviceversions/v1/ping"
+          }
+          
+          rule {
+            target_label = "__param_module"
+            replacement  = "http_2xx"
+          }
+
+          rule {
+            source_labels = ["__param_target"]
+            target_label  = "target"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            target_label  = "service"
+          }
+
+          rule {
+            target_label = "__address__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+
+          rule {
+            target_label = "__metrics_path__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+
+          rule {
+            target_label = "job"
+            replacement  = "apis_serviceversions"
+          }
+        }
+
+        prometheus.scrape "apis_serviceversions_v1_ping" {
+          targets         = discovery.relabel.apis_serviceversions_v1_ping.output
+          forward_to      = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
+
+          clustering {
+            enabled = true
+          }
+        }
+
+        discovery.relabel "apis_ping" {
+          targets = discovery.kubernetes.services.targets
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            regex         = "platform"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            regex         = "platform-.*"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_port_number"]
+            regex         = "80|443|3000|8080|7860|8000"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__address__"]
+            target_label  = "__param_target"
+            regex         = "(.*)"
+            replacement   = "http://${1}/ping"
+          }
+          rule {
+            source_labels = ["__param_path"]
+            regex         = ""
+            target_label  = "__param_path"
+            replacement   = "/ping"
+          }
+          
+          rule {
+            target_label = "__param_module"
+            replacement  = "http_2xx"
+          }
+          rule {
+            source_labels = ["__param_target"]
+            target_label  = "target"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            target_label  = "service"
+          }
+          rule {
+            target_label = "__address__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+          rule {
+            target_label = "__metrics_path__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+          rule {
+            target_label = "job"
+            replacement  = "apis_ping"
+          }
+        }
+        prometheus.scrape "apis_ping" {
+          targets         = discovery.relabel.apis_ping.output
+          forward_to      = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
+          clustering {
+            enabled = true
+          }
+        }
+
+        discovery.relabel "apis_health" {
+          targets = discovery.kubernetes.services.targets
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            regex         = "platform"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            regex         = "platform-.*"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_port_number"]
+            regex         = "80|443|3000|8080|7860|8000"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__address__"]
+            target_label  = "__param_target"
+            regex         = "(.*)"
+            replacement   = "http://${1}/apis/apps/v1/health"
+          }
+          rule {
+            source_labels = ["__param_path"]
+            regex         = ""
+            target_label  = "__param_path"
+            replacement   = "/apis/apps/v1/health"
+          }
+          
+          rule {
+            target_label = "__param_module"
+            replacement  = "http_2xx"
+          }
+          rule {
+            source_labels = ["__param_target"]
+            target_label  = "target"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            target_label  = "service"
+          }
+          rule {
+            target_label = "__address__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+          rule {
+            target_label = "__metrics_path__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+          rule {
+            target_label = "job"
+            replacement  = "apis_health"
+          }
+        }
+        prometheus.scrape "apis_health" {
+          targets         = discovery.relabel.apis_health.output
+          forward_to      = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
+          clustering {
+            enabled = true
+          }
+        }
+        discovery.relabel "apis_events" {
+          targets = discovery.kubernetes.services.targets
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            regex         = "platform"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            regex         = "platform-.*"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_port_number"]
+            regex         = "80|443|3000|8080|7860|8000"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__address__"]
+            target_label  = "__param_target"
+            regex         = "(.*)"
+            replacement   = "http://${1}/apis/events/v1/ping"
+          }
+          rule {
+            source_labels = ["__param_path"]
+            regex         = ""
+            target_label  = "__param_path"
+            replacement   = "/apis/events/v1/ping"
+          }
+          
+          rule {
+            target_label = "__param_module"
+            replacement  = "http_2xx"
+          }
+          rule {
+            source_labels = ["__param_target"]
+            target_label  = "target"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            target_label  = "service"
+          }
+          rule {
+            target_label = "__address__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+          rule {
+            target_label = "__metrics_path__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+          rule {
+            target_label = "job"
+            replacement  = "apis_events"
+          }
+        }
+        prometheus.scrape "apis_events" {
+          targets         = discovery.relabel.apis_events.output
+          forward_to      = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
+          clustering {
+            enabled = true
+          }
+        }
+        discovery.relabel "apis_v1_health" {
+          targets = discovery.kubernetes.services.targets
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            regex         = "platform"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            regex         = "platform-.*"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_port_number"]
+            regex         = "80|443|3000|8080|7860|8000"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__address__"]
+            target_label  = "__param_target"
+            regex         = "(.*)"
+            replacement   = "http://${1}/api/v1/health"
+          }
+          rule {
+            source_labels = ["__param_path"]
+            regex         = ""
+            target_label  = "__param_path"
+            replacement   = "/api/v1/health"
+          }
+          
+          rule {
+            target_label = "__param_module"
+            replacement  = "http_2xx"
+          }
+          rule {
+            source_labels = ["__param_target"]
+            target_label  = "target"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            target_label  = "service"
+          }
+          rule {
+            target_label = "__address__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+          rule {
+            target_label = "__metrics_path__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+          rule {
+            target_label = "job"
+            replacement  = "apis_v1_health"
+          }
+        }
+        prometheus.scrape "apis_v1_health" {
+          targets         = discovery.relabel.apis_v1_health.output
+          forward_to      = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
           clustering {
             enabled = true
           }
