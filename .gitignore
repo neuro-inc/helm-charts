@@ -1,2 +1,6 @@
 # Chart dependencies
 /charts/*/charts
+
+# IntellijIdea files
+*.iml
+.idea/*
