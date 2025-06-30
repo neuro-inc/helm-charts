@@ -800,7 +800,7 @@ alloy-uptime:
             enabled = true
           }
         }
-        
+
         discovery.relabel "services" {
           targets = discovery.kubernetes.services.targets
 
@@ -861,6 +861,74 @@ alloy-uptime:
             enabled = true
           }
         }
+
+        discovery.relabel "platform_services" {
+          targets = discovery.kubernetes.services.targets
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            regex         = "platform"
+            action        = "keep"
+          }  
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_annotation_platform_apolo_us_ping_url"]
+            regex         = ".+"
+            action        = "keep"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_annotation_platform_apolo_us_ping_url"]
+            target_label  = "__param_target"
+          }
+
+          rule {
+            target_label = "__param_module"
+            replacement  = "http_2xx"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_annotation_platform_apolo_us_ping_url"]
+            target_label  = "target"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+
+          rule {
+            source_labels = ["__meta_kubernetes_service_name"]
+            target_label  = "service"
+          }
+
+          rule {
+            target_label = "__address__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+
+          rule {
+            target_label = "__metrics_path__"
+            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+
+          rule {
+            target_label = "job"
+            replacement  = "platform-services"
+          }
+        }
+
+        prometheus.scrape "platform_services" {
+          targets         = discovery.relabel.platform_services.output
+          forward_to      = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
+
+          clustering {
+            enabled = true
+          }
+        }
+
   controller:
     type: 'deployment'
     replicas: 1
