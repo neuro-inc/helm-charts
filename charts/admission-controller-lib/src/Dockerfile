@@ -3,6 +3,7 @@ FROM python:3.12-slim-bullseye
 WORKDIR /app
 
 ADD pyproject.toml /app
+ADD poetry.lock /app
 
 RUN pip install poetry==2.1.1
 RUN poetry config virtualenvs.create false
