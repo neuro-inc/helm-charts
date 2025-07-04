@@ -153,6 +153,17 @@ entries:
     version: 1.0.0
   admission-controller-lib:
   - apiVersion: v2
+    appVersion: 0.1.13
+    created: "2025-07-04T13:55:12.210012208Z"
+    description: A Helm library chart that provides partial templates for an admission
+      controller
+    digest: a35630d4ace6bbb22f68157d290bdd5db68d70b33514d1abe98344bf0448b8ab
+    name: admission-controller-lib
+    type: library
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/admission-controller-lib-0.1.13/admission-controller-lib-0.1.13.tgz
+    version: 0.1.13
+  - apiVersion: v2
     appVersion: 0.1.12
     created: "2025-07-04T12:34:45.521482577Z"
     description: A Helm library chart that provides partial templates for an admission
@@ -1281,4 +1292,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/thanos-0.3.23/thanos-0.3.23.tgz
     version: 0.3.23
-generated: "2025-07-04T12:34:45.521724939Z"
+generated: "2025-07-04T13:55:12.210247515Z"
