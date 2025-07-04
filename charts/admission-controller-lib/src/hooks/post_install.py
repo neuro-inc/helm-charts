@@ -25,7 +25,7 @@ async def main():
     rules = json.loads(os.environ.get("RULES", "[]"))
     failure_policy = os.environ["FAILURE_POLICY"]
     reinvocation_policy = os.environ.get("REINVOCATION_POLICY")
-    timeout_seconds = os.environ.get("TIMEOUT_SECONDS", TIMEOUT_DEFAULT_S)
+    timeout_seconds = int(os.environ.get("TIMEOUT_SECONDS", TIMEOUT_DEFAULT_S))
 
     kube_config = create_kube_config()
 
