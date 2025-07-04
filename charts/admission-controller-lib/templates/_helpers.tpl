@@ -31,6 +31,8 @@
   value: "{{ .Values.admissionController.failurePolicy }}"
 - name: REINVOCATION_POLICY
   value: "{{ .Values.admissionController.reinvocationPolicy }}"
+- name: TIMEOUT_SECONDS
+  value: {{ .Values.admissionController.timeoutSeconds }}
 - name: CERT_SECRET_NAME
   value: "{{ .Values.admissionController.serviceName }}-cert"
 {{- end -}}
