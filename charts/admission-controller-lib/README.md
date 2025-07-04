@@ -1,9 +1,9 @@
 A helm chart for an admission controller integration
 ---
 
-It defines two jobs which should be included into a deployment of your webhook.
+It defines two jobs which should be included in a deployment of your webhook.
 
-The pre-install job generates TLS certificates and a certificate authority, 
+The pre-installation job generates TLS certificates and a certificate authority, 
 and puts them into a kube secret.
 
 The post-install job uses those secrets and creates an admission controller with the provided values
@@ -21,8 +21,10 @@ admissionController:
   webhookPath: "a webhook HTTP path which will be called by an admission controller"
   namespaceSelector: "namespace selector object in a format accepted by an admission controller"
   objectSelector: "object selector object in a format accepted by an admission controller"
+  rules: "a list of an admission controller rules. defaults to a pod creation only"
   failurePolicy: "one of `Ignore` or `Fail`"
   reinvocationPolicy: "one of `Never` or `IfNeeded`"
+  timeoutSeconds: "a timeout applied to this admission controller. defaults to a 30 seconds"
 
 ```
 

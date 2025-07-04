@@ -13,3 +13,4 @@ admissionController:
     scope: '*'
   failurePolicy: "Ignore"
   reinvocationPolicy: "Never"
+  timeoutSeconds: 30

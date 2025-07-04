@@ -13,6 +13,8 @@ from hooks.kube import (
 
 logger = logging.getLogger(__name__)
 
+TIMEOUT_DEFAULT_S = 30  # seconds
+
 
 async def main():
     service_name = os.environ["SERVICE_NAME"]
@@ -23,6 +25,7 @@ async def main():
     rules = json.loads(os.environ.get("RULES", "[]"))
     failure_policy = os.environ["FAILURE_POLICY"]
     reinvocation_policy = os.environ.get("REINVOCATION_POLICY")
+    timeout_seconds = os.environ.get("TIMEOUT_SECONDS", TIMEOUT_DEFAULT_S)
 
     kube_config = create_kube_config()
 
@@ -38,6 +41,7 @@ async def main():
                 rules=rules,
                 failure_policy=failure_policy,
                 reinvocation_policy=reinvocation_policy,
+                timeout_seconds=timeout_seconds,
             )
         except ResourceExists:
             await update_admission_controller(
@@ -50,6 +54,7 @@ async def main():
                 rules=rules,
                 failure_policy=failure_policy,
                 reinvocation_policy=reinvocation_policy,
+                timeout_seconds=timeout_seconds,
             )
 
 

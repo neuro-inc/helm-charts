@@ -93,6 +93,7 @@ def gen_webhook_payload(
     object_selector: dict[str, Any],
     namespace_selector: dict[str, Any],
     rules: list[dict[str, Any]],
+    timeout_seconds: int,
 ) -> dict[str, Any]:
     webhook_name = f"{service_name}.apolo.us"
 
@@ -115,6 +116,8 @@ def gen_webhook_payload(
         },
         "rules": rules,
         "failurePolicy": failure_policy,
+        "timeoutSeconds": timeout_seconds,
+
     }
     if reinvocation_policy:
         webhook["reinvocationPolicy"] = reinvocation_policy
@@ -135,6 +138,7 @@ async def create_admission_controller(
     rules: list[dict[str, Any]],
     failure_policy: str,
     reinvocation_policy: str | None,
+    timeout_seconds: int,
 ) -> dict[str, Any]:
     url = gen_admission_controller_url(kube)
     admission_controller_name = f"{ADMISSION_CONTROLLER_PREFIX}-{service_name}"
@@ -151,6 +155,7 @@ async def create_admission_controller(
         object_selector=object_selector,
         namespace_selector=namespace_selector,
         rules=rules,
+        timeout_seconds=timeout_seconds,
     )
 
     payload = {
@@ -174,6 +179,7 @@ async def update_admission_controller(
     rules: list[dict[str, Any]],
     failure_policy: str,
     reinvocation_policy: str | None,
+    timeout_seconds: int,
 ) -> dict[str, Any] | None:
     admission_controller_name = f"{ADMISSION_CONTROLLER_PREFIX}-{service_name}"
     url = gen_admission_controller_url(kube, admission_controller_name)
@@ -190,6 +196,7 @@ async def update_admission_controller(
         object_selector=object_selector,
         namespace_selector=namespace_selector,
         rules=rules,
+        timeout_seconds=timeout_seconds,
     )
 
     patch_body = {"webhooks": [webhook]}
