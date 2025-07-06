@@ -22,13 +22,10 @@ async def main():
     cert_secret_name = os.environ["CERT_SECRET_NAME"]
     object_selector = json.loads(os.environ["OBJECT_SELECTOR"])
     namespace_selector = json.loads(os.environ["NAMESPACE_SELECTOR"])
-    rules = json.loads(os.environ.get("RULES", "[]"))
+    rules = json.loads(os.environ.get("RULES") or "[]")
     failure_policy = os.environ["FAILURE_POLICY"]
     reinvocation_policy = os.environ.get("REINVOCATION_POLICY")
-    try:
-        timeout_seconds = int(os.environ["TIMEOUT_SECONDS"])
-    except (KeyError, TypeError, ValueError):
-        timeout_seconds = TIMEOUT_DEFAULT_S
+    timeout_seconds = int(os.environ.get("TIMEOUT_SECONDS") or TIMEOUT_DEFAULT_S)
 
     kube_config = create_kube_config()
 
