@@ -109,12 +109,10 @@ async def main():
 
     async with KubeClient(config=kube_config) as kube_client:
         try:
-            # await get_cert_secret(kube_client, secret_name=cert_secret_name)
             await kube_client.core_v1.secret.get(name=cert_secret_name)
         except ResourceNotFound:
             # let's create certificates, and put them into a secret
             certs = generate_ca_and_server_cert(service_dns_name=service_dsn)
-            # await create_cert_secret(kube, secret_name=cert_secret_name, certs=certs)
             secret = V1Secret(
                 api_version="v1",
                 kind="Secret",
