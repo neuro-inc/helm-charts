@@ -4,7 +4,7 @@ import logging
 import os
 from datetime import datetime, UTC, timedelta
 
-from apolo_kube_client import ResourceNotFound, KubeClient
+from apolo_kube_client import KubeClient, ResourceNotFound
 from cryptography import x509
 from cryptography.hazmat._oid import NameOID
 from cryptography.hazmat.backends import default_backend

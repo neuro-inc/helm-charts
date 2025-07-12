@@ -3,7 +3,7 @@ import json
 import logging
 import os
 
-from apolo_kube_client import ResourceExists, KubeClient
+from apolo_kube_client import KubeClient
 from hooks.kube import create_kube_config
 from kubernetes.client.models import (
     V1Secret,
@@ -13,6 +13,7 @@ from kubernetes.client.models import (
     AdmissionregistrationV1WebhookClientConfig,
     AdmissionregistrationV1ServiceReference,
     V1LabelSelector,
+    V1ObjectMeta,
     V1LabelSelectorRequirement,
 )
 
@@ -53,17 +54,14 @@ async def main():
         object_selector = (
             V1LabelSelector(
                 match_labels=object_selector.get("matchLabels", {}),
-                match_expressions=V1LabelSelectorRequirement(
-                    key=object_selector.get("matchExpressions", {}).get("key"),
-                    operator=object_selector.get("matchExpressions", {}).get(
-                        "operator"
-                    ),
-                    values=object_selector.get("matchExpressions", {}).get(
-                        "values", []
-                    ),
-                )
-                if object_selector.get("matchExpressions")
-                else None,
+                match_expressions=[
+                    V1LabelSelectorRequirement(
+                        key=expr["key"],
+                        operator=expr["operator"],
+                        values=expr.get("values", []),
+                    )
+                    for expr in namespace_selector.get("matchExpressions", [])
+                ],
             )
             if object_selector
             else None
@@ -72,17 +70,14 @@ async def main():
         namespace_selector = (
             V1LabelSelector(
                 match_labels=namespace_selector.get("matchLabels", {}),
-                match_expressions=V1LabelSelectorRequirement(
-                    key=namespace_selector.get("matchExpressions", {}).get("key"),
-                    operator=namespace_selector.get("matchExpressions", {}).get(
-                        "operator"
-                    ),
-                    values=namespace_selector.get("matchExpressions", {}).get(
-                        "values", []
-                    ),
-                )
-                if namespace_selector.get("matchExpressions")
-                else None,
+                match_expressions=[
+                    V1LabelSelectorRequirement(
+                        key=expr["key"],
+                        operator=expr["operator"],
+                        values=expr.get("values", []),
+                    )
+                    for expr in namespace_selector.get("matchExpressions", [])
+                ],
             )
             if namespace_selector
             else None
@@ -114,7 +109,7 @@ async def main():
             model=V1MutatingWebhookConfiguration(
                 api_version="admissionregistration.k8s.io/v1",
                 kind="MutatingWebhookConfiguration",
-                metadata={"name": admission_controller_name},
+                metadata=V1ObjectMeta(name=admission_controller_name),
                 webhooks=[
                     V1MutatingWebhook(
                         name=f"{service_name}.apolo.us",
