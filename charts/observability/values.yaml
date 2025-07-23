@@ -862,68 +862,123 @@ alloy-uptime:
           }
         }
 
-        discovery.relabel "platform_services" {
+        discovery.relabel "annotated_ping" {
           targets = discovery.kubernetes.services.targets
-
           rule {
             source_labels = ["__meta_kubernetes_namespace"]
             regex         = "platform"
             action        = "keep"
-          }  
-
+          }
           rule {
             source_labels = ["__meta_kubernetes_service_annotation_platform_apolo_us_ping_url"]
-            regex         = ".+"
+            regex         = "http://[a-z0-9-]+\\.platform\\.svc:8080/ping"
             action        = "keep"
           }
-
           rule {
             source_labels = ["__meta_kubernetes_service_annotation_platform_apolo_us_ping_url"]
             target_label  = "__param_target"
           }
-
           rule {
-            target_label = "__param_module"
-            replacement  = "http_2xx"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_service_annotation_platform_apolo_us_ping_url"]
+            source_labels = ["__param_target"]
             target_label  = "target"
           }
-
+          rule {
+            target_label  = "__param_module"
+            replacement   = "http_2xx"
+          }
+          rule {
+            target_label  = "__address__"
+            replacement   = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+          rule {
+            target_label  = "__metrics_path__"
+            replacement   = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
           rule {
             source_labels = ["__meta_kubernetes_namespace"]
             target_label  = "namespace"
           }
-
           rule {
             source_labels = ["__meta_kubernetes_service_name"]
             target_label  = "service"
           }
-
           rule {
-            target_label = "__address__"
-            replacement  = prometheus.exporter.blackbox.default.targets[0].__address__
-          }
-
-          rule {
-            target_label = "__metrics_path__"
-            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
-          }
-
-          rule {
-            target_label = "job"
-            replacement  = "platform-services"
+            target_label  = "job"
+            replacement   = "annotated_ping"
           }
         }
 
-        prometheus.scrape "platform_services" {
-          targets         = discovery.relabel.platform_services.output
+        prometheus.scrape "annotated_ping" {
+          targets         = discovery.relabel.annotated_ping.output
           forward_to      = [prometheus.remote_write.default.receiver]
           scrape_interval = "30s"
           scrape_timeout  = "30s"
+          clustering {
+            enabled = true
+          }
+        }
+        
+        discovery.kubernetes "external_https_ping_ingresses" {
+          role = "ingress"
+          namespaces {
+            names = ["platform"]
+          }
+        }
 
+        discovery.relabel "external_https_ping" {
+          targets = discovery.kubernetes.external_https_ping_ingresses.targets
+          rule {
+            source_labels = ["__meta_kubernetes_ingress_annotation_platform_apolo_us_ping_url"]
+            regex         = "^https://.+"
+            action        = "keep"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_ingress_name"]
+            target_label  = "service"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_ingress_annotation_platform_apolo_us_ping_url"]
+            target_label  = "__param_target"
+          }
+          rule {
+            source_labels = ["__param_target"]
+            target_label  = "target"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_ingress_annotation_platform_apolo_us_ping_url"]
+            target_label  = "ping_url"
+          }
+          rule {
+            target_label  = "__param_module"
+            replacement   = "http_2xx"
+          }
+          rule {
+            target_label  = "__address__"
+            replacement   = prometheus.exporter.blackbox.default.targets[0].__address__
+          }
+          rule {
+            target_label  = "__metrics_path__"
+            replacement   = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
+          }
+          rule {
+            target_label  = "__scheme__"
+            replacement   = "http"
+          }
+          rule {
+            target_label  = "job"
+            replacement   = "external_https_ping"
+          }
+        }
+
+        prometheus.scrape "external_https_ping" {
+          targets         = discovery.relabel.external_https_ping.output
+          forward_to      = [prometheus.remote_write.default.receiver]
+          scrape_interval = "30s"
+          scrape_timeout  = "30s"
           clustering {
             enabled = true
           }
