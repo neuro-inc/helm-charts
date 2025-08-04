@@ -871,7 +871,7 @@ alloy-uptime:
           }
           rule {
             source_labels = ["__meta_kubernetes_service_annotation_platform_apolo_us_ping_url"]
-            regex         = "http://[a-z0-9-]+\\.platform\\.svc:8080/ping"
+            regex         = "http://[a-z0-9-]+\\.platform\\.svc(:[0-9]+)?(:)?/ping"
             action        = "keep"
           }
           rule {
