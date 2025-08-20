@@ -633,6 +633,146 @@ alloy-metrics:
           }
         }
 
+        prometheus.scrape "novoserve_federated_metrics" {
+          targets = [{"__address__" = "novoserve.org.neu.ro:443"}]
+
+          scheme       = "https"
+          metrics_path = "/federate"
+          
+          params = { "match[]" = ["{__name__=~\"^(node|cluster|svc):.*$\"}"] }
+
+
+          tls_config {
+            server_name = "novoserve.org.neu.ro"
+          }
+
+          clustering { 
+            enabled = true 
+          } 
+
+          basic_auth { 
+            username = "federate"
+            password = sys.env("NOVOSERVE_FEDERATE_PASSWORD")
+          }
+
+          scrape_interval = "30s"
+          scrape_timeout  = "10s"
+
+          forward_to = [prometheus.remote_write.default.receiver]
+        }
+
+        prometheus.scrape "scottdc_federated_metrics" {
+          targets = [{"__address__" = "scottdc.org.apolo.scottdata.ai:443"}]
+
+          scheme       = "https"
+          metrics_path = "/federate"
+          
+          params = { "match[]" = ["{__name__=~\"^(node|cluster|svc):.*$\"}"] }
+
+
+          tls_config {
+            server_name = "scottdc.org.apolo.scottdata.ai"
+          }
+
+          clustering { 
+            enabled = true 
+          } 
+
+          basic_auth { 
+            username = "federate"
+            password = sys.env("SCOTTDC_FEDERATE_PASSWORD")
+          }
+
+          scrape_interval = "30s"
+          scrape_timeout  = "10s"
+
+          forward_to = [prometheus.remote_write.default.receiver]
+        }
+
+        prometheus.scrape "imdc_federated_metrics" {
+          targets = [{"__address__" = "imdc.org.neu.ro:443"}]
+
+          scheme       = "https"
+          metrics_path = "/federate"
+          
+          params = { "match[]" = ["{__name__=~\"^(node|cluster|svc):.*$\"}"] }
+
+
+          tls_config {
+            server_name = "imdc.org.neu.ro"
+          }
+
+          clustering { 
+            enabled = true 
+          } 
+
+          basic_auth { 
+            username = "federate"
+            password = sys.env("IMDC_FEDERATE_PASSWORD")
+          }
+
+          scrape_interval = "30s"
+          scrape_timeout  = "10s"
+
+          forward_to = [prometheus.remote_write.default.receiver]
+        }
+
+        prometheus.scrape "onue_federated_metrics" {
+          targets = [{"__address__" = "us-east-1.org.neu.ro:443"}]
+
+          scheme       = "https"
+          metrics_path = "/federate"
+          
+          params = { "match[]" = ["{__name__=~\"^(node|cluster|svc):.*$\"}"] }
+
+
+          tls_config {
+            server_name = "us-east-1.org.neu.ro"
+          }
+
+          clustering { 
+            enabled = true 
+          } 
+
+          basic_auth { 
+            username = "federate"
+            password = sys.env("ONUE_FEDERATE_PASSWORD")
+          }
+
+          scrape_interval = "30s"
+          scrape_timeout  = "10s"
+
+          forward_to = [prometheus.remote_write.default.receiver]
+        }
+
+        prometheus.scrape "wwt_federated_metrics" {
+          targets = [{"__address__" = "wwtatc-cl1.org.neu.ro:443"}]
+
+          scheme       = "https"
+          metrics_path = "/federate"
+          
+          params = { "match[]" = ["{__name__=~\"^(node|cluster|svc):.*$\"}"] }
+
+
+          tls_config {
+            server_name = "wwtatc-cl1.org.neu.ro"
+          }
+
+          clustering { 
+            enabled = true 
+          } 
+
+          basic_auth { 
+            username = "federate"
+            password = sys.env("WWT_FEDERATE_PASSWORD")
+          }
+
+          scrape_interval = "30s"
+          scrape_timeout  = "10s"
+
+          forward_to = [prometheus.remote_write.default.receiver]
+        }
+
   controller:
     type: 'deployment'
 
