@@ -417,12 +417,12 @@ alloy-logs:
           }
 
           stage.pack {
-            labels           = ["stream", "node_name", "level", "logger", "context"]
+            labels           = ["stream", "node_name", "level", "logger", "context",  "pod"]
             ingest_timestamp = false
           }
 
           stage.label_keep {
-            values = ["app", "instance", "namespace", "pod", "container", "apolo_org_name", "apolo_project_name", "apolo_app_instance_name"]
+            values = ["app", "instance", "namespace", "container", "apolo_org_name", "apolo_project_name", "apolo_app_instance_name"]
           }
         }
 
