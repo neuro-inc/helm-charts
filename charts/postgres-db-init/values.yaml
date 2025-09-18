@@ -1,6 +1,6 @@
 image:
-  repository: bitnami/postgresql
-  tag: 11.14.0-debian-10-r17
+  repository: bitnamilegacy/postgresql
+  tag: 11.14.0
 
 imagePullSecrets: []
 
