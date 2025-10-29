@@ -1,0 +1,14 @@
+route:
+  namespace: null
+  traefikEntryPointName: "websecure"
+  vclusterServiceName: "vcluster"
+  vclusterPort: 443
+  domainName: null
+
+
+# vcluster chart values
+sync:
+  toHost:
+    secrets:
+      enabled: true
+      all: true
