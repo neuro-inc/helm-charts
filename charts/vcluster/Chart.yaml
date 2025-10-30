@@ -1,9 +1,9 @@
 apiVersion: v2
-version: 0.1.0
+version: 0.1.1
 appVersion: 0.30.0
 name: apolo-vcluster
 description: vcluster wrapper
-type: library
+type: application
 dependencies:
 - name: vcluster
   repository: "https://charts.loft.sh"
