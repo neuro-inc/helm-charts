@@ -339,6 +339,21 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/admission-controller-lib-0.1.0/admission-controller-lib-0.1.0.tgz
     version: 0.1.0
+  apolo-vcluster:
+  - apiVersion: v2
+    appVersion: 0.30.0
+    created: "2025-10-30T09:37:52.881813208Z"
+    dependencies:
+    - name: vcluster
+      repository: https://charts.loft.sh
+      version: 0.30.0
+    description: vcluster wrapper
+    digest: a3f051941e273f60a2d5564373f1e99f15a40b43e0c4b9421ac4739438beb722
+    name: apolo-vcluster
+    type: library
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/apolo-vcluster-0.1.0/apolo-vcluster-0.1.0.tgz
+    version: 0.1.0
   k8s-resources:
   - apiVersion: v2
     appVersion: 1.0.1
@@ -1503,4 +1518,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/thanos-0.3.23/thanos-0.3.23.tgz
     version: 0.3.23
-generated: "2025-09-18T08:51:55.548821738Z"
+generated: "2025-10-30T09:37:52.881991401Z"
