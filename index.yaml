@@ -342,6 +342,20 @@ entries:
   apolo-vcluster:
   - apiVersion: v2
     appVersion: 0.30.0
+    created: "2025-10-30T18:23:44.574062301Z"
+    dependencies:
+    - name: vcluster
+      repository: https://charts.loft.sh
+      version: 0.30.0
+    description: vcluster wrapper
+    digest: 28bc207d86c42e7702cff18277286fc413597cf63c558a4701ecb5b8371e224d
+    name: apolo-vcluster
+    type: application
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/apolo-vcluster-0.1.2/apolo-vcluster-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 0.30.0
     created: "2025-10-30T14:27:20.699560516Z"
     dependencies:
     - name: vcluster
@@ -1532,4 +1546,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/thanos-0.3.23/thanos-0.3.23.tgz
     version: 0.3.23
-generated: "2025-10-30T14:27:20.699768105Z"
+generated: "2025-10-30T18:23:44.574293652Z"
