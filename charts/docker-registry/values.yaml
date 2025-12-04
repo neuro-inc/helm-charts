@@ -75,6 +75,11 @@ secrets:
 #   s3:
 #     accessKey: ""
 #     secretKey: ""
+#    # Or use an existing secret
+#     existingSecret:
+#       name: ""
+#       s3AccessKeySecretKey: "s3AccessKey"
+#       s3SecretKeySecretKey: "s3SecretKey"
 # Secrets for Swift username and password
 #   swift:
 #     username: ""
