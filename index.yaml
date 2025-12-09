@@ -382,6 +382,25 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/apolo-vcluster-0.1.0/apolo-vcluster-0.1.0.tgz
     version: 0.1.0
+  docker-registry:
+  - apiVersion: v1
+    appVersion: 2.7.1
+    created: "2025-12-09T17:59:34.309825263Z"
+    description: A Helm chart for Docker Registry
+    digest: 76807861128b35e9ee738e5cb01b86e62705e9465be69bbc0a6c6f8e6eeecda5
+    home: https://hub.docker.com/_/registry/
+    icon: https://hub.docker.com/public/images/logos/mini-logo.svg
+    maintainers:
+    - email: jpds@protonmail.com
+      name: jpds
+    - email: pete.brown@powerhrg.com
+      name: rendhalver
+    name: docker-registry
+    sources:
+    - https://github.com/docker/distribution-library-image
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/docker-registry-1.0.0/docker-registry-1.0.0.tgz
+    version: 1.0.0
   k8s-resources:
   - apiVersion: v2
     appVersion: 1.0.1
@@ -1546,4 +1565,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/thanos-0.3.23/thanos-0.3.23.tgz
     version: 0.3.23
-generated: "2025-10-30T18:23:44.574293652Z"
+generated: "2025-12-09T17:59:34.310061433Z"
