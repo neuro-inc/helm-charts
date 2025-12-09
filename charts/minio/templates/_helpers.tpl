@@ -65,17 +65,6 @@ Return the appropriate apiVersion for statefulset.
 {{- end -}}
 
 {{/*
-Return the appropriate apiVersion for ingress.
-*/}}
-{{- define "minio.ingress.apiVersion" -}}
-{{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-{{- print "extensions/v1beta1" -}}
-{{- else -}}
-{{- print "networking.k8s.io/v1beta1" -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Determine service account name for deployment or statefulset.
 */}}
 {{- define "minio.serviceAccountName" -}}
