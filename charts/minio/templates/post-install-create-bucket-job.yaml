@@ -46,7 +46,7 @@ spec:
                 name: {{ template "minio.fullname" . }}
             - secret:
                 name: {{ if .Values.existingSecret.name }}{{ .Values.existingSecret.name }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
-                {{- if or .Values.existingSecret.accessKeyKey .Values.existingSecret.secretKeySecretKey }}
+                {{- if or .Values.existingSecret.accessKeyKey .Values.existingSecret.secretKeyKey }}
                 items:
                   {{- if .Values.existingSecret.accessKeyKey }}
                   - key: {{ .Values.existingSecret.accessKeyKey }}
