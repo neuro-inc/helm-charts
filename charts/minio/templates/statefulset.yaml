@@ -124,12 +124,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ if .Values.existingSecret }}{{ .Values.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
-                  key: {{ if and .Values.existingSecret.name .Values.existingSecret.accessKeySecretKey }}{{ .Values.existingSecret.accessKeySecretKey }}{{ else }}accesskey{{ end }}
+                  key: {{ if and .Values.existingSecret.name .Values.existingSecret.accessKeyKey }}{{ .Values.existingSecret.accessKeyKey }}{{ else }}accesskey{{ end }}
             - name: MINIO_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ if .Values.existingSecret }}{{ .Values.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
-                  key: {{ if and .Values.existingSecret.name .Values.existingSecret.secretKeySecretKey }}{{ .Values.existingSecret.secretKeySecretKey }}{{ else }}secretkey{{ end }}
+                  key: {{ if and .Values.existingSecret.name .Values.existingSecret.secretKeyKey }}{{ .Values.existingSecret.secretKeyKey }}{{ else }}secretkey{{ end }}
             {{- range $key, $val := .Values.environment }}
             - name: {{ $key }}
               value: {{ $val | quote }}

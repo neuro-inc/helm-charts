@@ -63,8 +63,8 @@ priorityClassName: ""
 ##
 existingSecret:
   name: ""
-  accessKeySecretKey: ""
-  secretKeySecretKey: ""
+  accessKeyKey: ""
+  secretKeyKey: ""
 accessKey: "AKIAIOSFODNN7EXAMPLE"
 secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 certsPath: "/etc/minio/certs/"
