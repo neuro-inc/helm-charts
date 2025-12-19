@@ -425,6 +425,25 @@ entries:
   minio:
   - apiVersion: v1
     appVersion: master
+    created: "2025-12-19T10:08:36.549897716Z"
+    deprecated: true
+    description: DEPRECATED MinIO is a high performance data infrastructure for machine
+      learning, analytics and application data workloads.
+    digest: 4d67ffeada233c19fc95cb5a204bf3a0e26036f387b4114424a88187c1409de8
+    home: https://min.io
+    icon: https://min.io/resources/img/logo/MINIO_wordmark.png
+    keywords:
+    - storage
+    - object-storage
+    - S3
+    name: minio
+    sources:
+    - https://github.com/minio/minio
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/minio-1.0.1/minio-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v1
+    appVersion: master
     created: "2025-12-09T18:00:43.871607031Z"
     deprecated: true
     description: DEPRECATED MinIO is a high performance data infrastructure for machine
@@ -1585,4 +1604,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/thanos-0.3.23/thanos-0.3.23.tgz
     version: 0.3.23
-generated: "2025-12-09T18:00:43.871804661Z"
+generated: "2025-12-19T10:08:36.550049659Z"
