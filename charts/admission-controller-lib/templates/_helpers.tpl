@@ -1,5 +1,28 @@
+{{- define "admission-controller-lib.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 {{- define "admission-controller-lib.fullname" -}}
-{{- printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" -}}
+{{- if .Values.fullnameOverride -}}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "admission-controller-lib.preinstall.fullname" -}}
+{{- $fullname := include "admission-controller-lib.fullname" . -}}
+{{- printf "%s-admission-controller-preinstall" $fullname | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "admission-controller-lib.postinstall.fullname" -}}
+{{- $fullname := include "admission-controller-lib.fullname" . -}}
+{{- printf "%s-admission-controller-postinstall" $fullname | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- define "admission-controller-lib.chart" -}}

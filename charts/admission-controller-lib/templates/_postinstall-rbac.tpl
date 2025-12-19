@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: admission-controller-lib
+  name: {{ include "admission-controller-lib.postinstall.fullname" . }}
   labels:
     {{- include "admission-controller-lib.labels.standard" . | nindent 4 }}
   annotations:
@@ -15,7 +15,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: admission-controller-lib
+  name: {{ include "admission-controller-lib.postinstall.fullname" . }}
   labels:
     {{- include "admission-controller-lib.labels.standard" . | nindent 4 }}
   annotations:
@@ -50,7 +50,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: admission-controller-lib
+  name: {{ include "admission-controller-lib.postinstall.fullname" . }}
   labels:
     {{- include "admission-controller-lib.labels.standard" . | nindent 4 }}
   annotations:
@@ -58,11 +58,11 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 subjects:
   - kind: ServiceAccount
-    name: admission-controller-lib
+    name: {{ include "admission-controller-lib.postinstall.fullname" . }}
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: admission-controller-lib
+  name: {{ include "admission-controller-lib.postinstall.fullname" . }}
   apiGroup: rbac.authorization.k8s.io
 
 {{- end -}}
