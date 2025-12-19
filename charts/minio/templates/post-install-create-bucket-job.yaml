@@ -45,7 +45,18 @@ spec:
             - configMap:
                 name: {{ template "minio.fullname" . }}
             - secret:
-                name: {{ if .Values.existingSecret }}{{ .Values.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+                name: {{ if .Values.existingSecret.name }}{{ .Values.existingSecret.name }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+                {{- if or .Values.existingSecret.accessKeyKey .Values.existingSecret.secretKeyKey }}
+                items:
+                  {{- if .Values.existingSecret.accessKeyKey }}
+                  - key: {{ .Values.existingSecret.accessKeyKey }}
+                    path: accesskey
+                  {{- end}}
+                  {{- if .Values.existingSecret.secretKeyKey }}
+                  - key: {{ .Values.existingSecret.secretKeyKey }}
+                    path: secretkey
+                  {{- end}}
+                {{- end }}
         {{- if .Values.tls.enabled }}
         - name: cert-secret-volume-mc
           secret:
