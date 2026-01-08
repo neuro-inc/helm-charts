@@ -1,0 +1,21 @@
+# Default values for reverse-proxy.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ExternalName
+  port: 443
+  externalName: job-app-dev-apolo-us.netlify.app
+
+ingress:
+  enabled: true
+  className: "traefik"
+  annotations: {}
+  hosts:
+    - host: netlify123.jobs-dev.neu.ro
+      paths:
+        - path: /
+          pathType: ImplementationSpecific

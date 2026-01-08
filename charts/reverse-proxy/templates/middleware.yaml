@@ -1,0 +1,9 @@
+# Redirect with domain replacement
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  headers:
+    customRequestHeaders:
+      Host: "{{ .Values.service.externalName }}"
