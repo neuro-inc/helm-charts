@@ -526,6 +526,15 @@ entries:
   nfs-server:
   - apiVersion: v1
     appVersion: "0.8"
+    created: "2026-05-18T14:44:25.372595601Z"
+    description: In-cluster kubernetes NFS server.
+    digest: 1379618b505d5b3ad6c38e6c67f68edf513ab5baf6e8dafaf0b94c49ca4d1da9
+    name: nfs-server
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/nfs-server-1.4.4/nfs-server-1.4.4.tgz
+    version: 1.4.4
+  - apiVersion: v1
+    appVersion: "0.8"
     created: "2025-03-13T15:25:20.114882334Z"
     description: In-cluster kubernetes NFS server.
     digest: 91a2f9e4afa0cf8e0c1fe7bfe74172c21acad1d9407f9f1ed02e746f3629f08e
@@ -1670,4 +1679,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/thanos-0.3.23/thanos-0.3.23.tgz
     version: 0.3.23
-generated: "2026-03-06T09:37:32.785038984Z"
+generated: "2026-05-18T14:44:25.372779408Z"
