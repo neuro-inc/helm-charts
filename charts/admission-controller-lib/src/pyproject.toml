@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12,<4.0"
 dependencies = [
     "apolo-kube-client (==25.8.0)",
-    "cryptography (>=48.0.1,<49.0.0)"
+    "cryptography (>=50.0.0,<51.0.0)"
 ]
 
 [tool.poetry]
