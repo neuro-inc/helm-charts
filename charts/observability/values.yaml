@@ -757,6 +757,12 @@ alloy-uptime:
           targets = discovery.kubernetes.default.targets
 
           rule {
+            source_labels = ["__meta_kubernetes_ingress_path"]
+            regex         = "/?"
+            action        = "keep"
+          }
+
+          rule {
             source_labels = [
               "__meta_kubernetes_ingress_scheme",
               "__address__",
