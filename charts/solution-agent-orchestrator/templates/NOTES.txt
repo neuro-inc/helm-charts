@@ -1,0 +1,39 @@
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- else if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "solution-agent-orchestrator.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "solution-agent-orchestrator.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "solution-agent-orchestrator.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.service.port }}
+{{- else }}
+  echo "Access the application at http://{{ include "solution-agent-orchestrator.fullname" . }}:{{ .Values.service.port }}"
+{{- end }}
+
+2. IMPORTANT: Verify that all REQUIRED environment variables are set:
+   - API_JWT_SECRET
+   - SWAGGER_USERNAME
+   - SWAGGER_PASSWORD
+   - UPWORK_CLIENT_ID
+   - UPWORK_CLIENT_SECRET
+   - UPWORK_USER_AGENT
+   - WEBHOOK_SECRET
+   - DATABASE_URL
+
+   Check with: kubectl get deployment {{ include "solution-agent-orchestrator.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.spec.template.spec.containers[0].env[*].name}'
+
+3. OPTIONAL variables (with defaults if not set):
+   - WEBHOOK_PREVIOUS_SECRET
+   - WEBHOOK_MAX_AGE_SECONDS (default: 120)
+   - API_PREFIX (default: /api/v1)
+   - UPWORK_OAUTH_TOKEN_URL
+   - UPWORK_API_BASE_URL
+
