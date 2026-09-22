@@ -807,67 +807,6 @@ alloy-uptime:
           }
         }
 
-        discovery.relabel "services" {
-          targets = discovery.kubernetes.services.targets
-
-          rule {
-            source_labels = ["__meta_kubernetes_service_port_number"]
-            regex         = "80|443|3000|8080|7860|8000"
-            action        = "keep"
-          }
-
-          rule {
-            source_labels = ["__address__"]
-            target_label  = "__param_target"
-          }
-
-          rule {
-            target_label = "__param_module"
-            replacement  = "http_2xx"
-          }
-
-          rule {
-            source_labels = ["__address__"]
-            target_label  = "target"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_namespace"]
-            target_label  = "namespace"
-          }
-
-          rule {
-            source_labels = ["__meta_kubernetes_service_name"]
-            target_label  = "service"
-          }
-
-          rule {
-            target_label = "__address__"
-            replacement  = prometheus.exporter.blackbox.default.targets[0].__address__
-          }
-
-          rule {
-            target_label = "__metrics_path__"
-            replacement  = prometheus.exporter.blackbox.default.targets[0].__metrics_path__
-          }
-
-          rule {
-            target_label = "job"
-            replacement  = "k8s-services"
-          }
-        }
-
-        prometheus.scrape "services" {
-          targets         = discovery.relabel.services.output
-          forward_to      = [prometheus.remote_write.default.receiver]
-          scrape_interval = "30s"
-          scrape_timeout  = "30s"
-
-          clustering {
-            enabled = true
-          }
-        }
-
         discovery.relabel "annotated_ping" {
           targets = discovery.kubernetes.services.targets
           rule {
