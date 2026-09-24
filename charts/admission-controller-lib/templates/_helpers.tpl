@@ -70,3 +70,7 @@ helm.sh/chart: {{ include "admission-controller-lib.chart" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
 app.kubernetes.io/instance: {{ .Release.Name | quote }}
 {{- end -}}
+
+{{- define "admission-controller-lib.image" -}}
+ghcr.io/neuro-inc/admission-controller-lib:0.2.0
+{{- end -}}

@@ -33,7 +33,7 @@ async def main():
     namespace_selector = json.loads(os.environ["NAMESPACE_SELECTOR"])
     rules = json.loads(os.environ.get("RULES") or "[]")
     failure_policy = os.environ["FAILURE_POLICY"]
-    reinvocation_policy = os.environ.get("REINVOCATION_POLICY")
+    reinvocation_policy = os.environ.get("REINVOCATION_POLICY") or None
     timeout_seconds = int(os.environ.get("TIMEOUT_SECONDS") or TIMEOUT_DEFAULT_S)
 
     kube_config = create_kube_config()
@@ -60,7 +60,7 @@ async def main():
                         operator=expr["operator"],
                         values=expr.get("values", []),
                     )
-                    for expr in namespace_selector.get("matchExpressions", [])
+                    for expr in object_selector.get("matchExpressions", [])
                 ],
             )
             if object_selector
