@@ -3,8 +3,9 @@ import json
 import logging
 import os
 
-from apolo_kube_client import KubeClient
+from apolo_kube_client import KubeClient, ResourceNotFound
 from hooks.kube import create_kube_config
+from kubernetes.client import ApiClient
 from kubernetes.client.models import (
     V1Secret,
     V1MutatingWebhookConfiguration,
@@ -90,7 +91,7 @@ async def main():
                     api_groups=rule["apiGroups"],
                     api_versions=rule["apiVersions"],
                     resources=rule["resources"],
-                    scope=rule["scope"],
+                    scope=rule.get("scope"),
                 )
                 for rule in rules
             ]
@@ -105,27 +106,43 @@ async def main():
             ]
         )
 
-        await kube_client.admission_registration_k8s_io_v1.mutating_webhook_configuration.create_or_update(
-            model=V1MutatingWebhookConfiguration(
-                api_version="admissionregistration.k8s.io/v1",
-                kind="MutatingWebhookConfiguration",
-                metadata=V1ObjectMeta(name=admission_controller_name),
-                webhooks=[
-                    V1MutatingWebhook(
-                        name=f"{service_name}.apolo.us",
-                        admission_review_versions=["v1", "v1beta1"],
-                        side_effects="None",
-                        client_config=client_config,
-                        object_selector=object_selector,
-                        namespace_selector=namespace_selector,
-                        rules=rules,
-                        failure_policy=failure_policy,
-                        reinvocation_policy=reinvocation_policy,
-                        timeout_seconds=timeout_seconds,
-                    )
+        webhook_configuration = V1MutatingWebhookConfiguration(
+            api_version="admissionregistration.k8s.io/v1",
+            kind="MutatingWebhookConfiguration",
+            metadata=V1ObjectMeta(name=admission_controller_name),
+            webhooks=[
+                V1MutatingWebhook(
+                    name=f"{service_name}.apolo.us",
+                    admission_review_versions=["v1", "v1beta1"],
+                    side_effects="None",
+                    client_config=client_config,
+                    object_selector=object_selector,
+                    namespace_selector=namespace_selector,
+                    rules=rules,
+                    failure_policy=failure_policy,
+                    reinvocation_policy=reinvocation_policy,
+                    timeout_seconds=timeout_seconds,
+                )
+            ],
+        )
+
+        resource = (
+            kube_client.admission_registration_k8s_io_v1.mutating_webhook_configuration
+        )
+        try:
+            await resource.get(name=admission_controller_name)
+        except ResourceNotFound:
+            await resource.create(model=webhook_configuration)
+        else:
+            webhooks = ApiClient().sanitize_for_serialization(webhook_configuration)[
+                "webhooks"
+            ]
+            await resource.patch_json(
+                name=admission_controller_name,
+                patch_json_list=[
+                    {"op": "replace", "path": "/webhooks", "value": webhooks}
                 ],
             )
-        )
 
 
 if __name__ == "__main__":
