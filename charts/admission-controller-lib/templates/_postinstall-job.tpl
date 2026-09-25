@@ -18,8 +18,8 @@ spec:
       restartPolicy: Never
       containers:
         - name: postinstall
-          image: ghcr.io/neuro-inc/admission-controller-lib:latest
-          imagePullPolicy: Always
+          image: {{ include "admission-controller-lib.image" . }}
+          imagePullPolicy: IfNotPresent
           args: ["post-install"]
           env:
             {{- include "admission-controller-lib.env" . | nindent 12 }}

@@ -5,8 +5,19 @@ on:
     branches: [master]
 
 jobs:
+  admission-controller-lib-image:
+    uses: ./.github/workflows/admission-controller-lib-image.yaml
+    with:
+      push: true
+    permissions:
+      contents: read
+      packages: write
+
   release:
+    needs: admission-controller-lib-image
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - name: Checkout
       uses: actions/checkout@v4
