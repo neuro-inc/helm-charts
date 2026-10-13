@@ -4,6 +4,7 @@ import hmac
 import os
 import threading
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -29,7 +30,7 @@ def sign(key, msg):
 
 def list_page(token):
     url = urllib.parse.urlsplit(f"{ENDPOINT}/{BUCKET}")
-    params = {"list-type": "2", "max-keys": "1000"}
+    params = {"encoding-type": "url", "list-type": "2", "max-keys": "1000"}
     if token:
         params["continuation-token"] = token
     query = "&".join(
@@ -40,7 +41,7 @@ def list_page(token):
     headers = {"host": url.netloc, "x-amz-content-sha256": EMPTY_SHA256, "x-amz-date": amz_date}
     signed = ";".join(sorted(headers))
     canonical = "\n".join(
-        ["GET", urllib.parse.quote(url.path), query, *(f"{k}:{headers[k]}" for k in sorted(headers)), "", signed, EMPTY_SHA256]
+        ["GET", url.path, query, *(f"{k}:{headers[k]}" for k in sorted(headers)), "", signed, EMPTY_SHA256]
     )
     scope = f"{day}/{REGION}/s3/aws4_request"
     to_sign = "\n".join(["AWS4-HMAC-SHA256", amz_date, scope, hashlib.sha256(canonical.encode()).hexdigest()])
@@ -49,9 +50,13 @@ def list_page(token):
     headers["authorization"] = (
         f"AWS4-HMAC-SHA256 Credential={ACCESS_KEY}/{scope}, SignedHeaders={signed}, Signature={signature}"
     )
+    headers["user-agent"] = "registry-bucket-usage/1.0"
     request = urllib.request.Request(f"{ENDPOINT}/{BUCKET}?{query}", headers=headers)
-    with urllib.request.urlopen(request, timeout=120) as response:
-        return ET.fromstring(response.read())
+    try:
+        with urllib.request.urlopen(request, timeout=120) as response:
+            return ET.fromstring(response.read())
+    except urllib.error.HTTPError as error:
+        raise RuntimeError(f"HTTP {error.code}: {error.read()[:300]!r}") from None
 
 
 def kind_of(key):
@@ -72,7 +77,7 @@ def scan():
         page = list_page(token)
         ns = page.tag[: page.tag.index("}") + 1] if page.tag.startswith("{") else ""
         for item in page.iter(f"{ns}Contents"):
-            kind = kind_of(item.findtext(f"{ns}Key"))
+            kind = kind_of(urllib.parse.unquote_plus(item.findtext(f"{ns}Key")))
             sizes[kind] += int(item.findtext(f"{ns}Size"))
             counts[kind] += 1
         if page.findtext(f"{ns}IsTruncated") != "true":

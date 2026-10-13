@@ -2,13 +2,17 @@
 {{- if ne .Values.storage "s3" }}
 {{- fail "bucketUsage needs storage: s3" }}
 {{- end }}
-{{- $fullname := printf "%s-bucket-usage" (include "docker-registry.fullname" .) | trunc 63 | trimSuffix "-" }}
+{{- if not (or .Values.secrets.s3.existingSecret (and .Values.secrets.s3.accessKey .Values.secrets.s3.secretKey)) }}
+{{- fail "bucketUsage needs static S3 credentials: secrets.s3.existingSecret or secrets.s3.accessKey and secretKey" }}
+{{- end }}
+{{- $fullname := printf "%s-bucket-usage" (include "docker-registry.fullname" . | trunc 50 | trimSuffix "-") }}
+{{- $app := printf "%s-bucket-usage" (include "docker-registry.name" . | trunc 50 | trimSuffix "-") }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ $fullname }}
   labels:
-    app: {{ template "docker-registry.name" . }}-bucket-usage
+    app: {{ $app }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
@@ -21,7 +25,7 @@ kind: Deployment
 metadata:
   name: {{ $fullname }}
   labels:
-    app: {{ template "docker-registry.name" . }}-bucket-usage
+    app: {{ $app }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -29,12 +33,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ template "docker-registry.name" . }}-bucket-usage
+      app: {{ $app }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "docker-registry.name" . }}-bucket-usage
+        app: {{ $app }}
         release: {{ .Release.Name }}
       annotations:
         checksum/script: {{ .Files.Get "files/bucket_usage.py" | sha256sum }}
@@ -121,7 +125,7 @@ kind: Service
 metadata:
   name: {{ $fullname }}
   labels:
-    app: {{ template "docker-registry.name" . }}-bucket-usage
+    app: {{ $app }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -132,7 +136,7 @@ spec:
       port: 9100
       targetPort: metrics
   selector:
-    app: {{ template "docker-registry.name" . }}-bucket-usage
+    app: {{ $app }}
     release: {{ .Release.Name }}
 {{- if .Values.bucketUsage.serviceMonitor.enabled }}
 ---
@@ -141,7 +145,7 @@ kind: ServiceMonitor
 metadata:
   name: {{ $fullname }}
   labels:
-    app: {{ template "docker-registry.name" . }}-bucket-usage
+    app: {{ $app }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -151,7 +155,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ template "docker-registry.name" . }}-bucket-usage
+      app: {{ $app }}
       release: {{ .Release.Name }}
   endpoints:
     - port: metrics
