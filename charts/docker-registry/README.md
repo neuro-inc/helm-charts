@@ -46,6 +46,11 @@ their default values.
 | `podAnnotations`            | Annotations for pod                                                                        | `{}`            |
 | `podLabels`                 | Labels for pod                                                                             | `{}`            |
 | `podDisruptionBudget`       | Pod disruption budget                                                                      | `{}`            |
+| `bucketUsage.enabled`       | Run an exporter that lists the S3 bucket and reports `registry_bucket_bytes` and `registry_bucket_objects` by kind (blobs, uploads, repositories, other) | `false` |
+| `bucketUsage.endpoint`      | S3 endpoint URL with scheme, for example `https://s3.example.com`                          | `""`            |
+| `bucketUsage.scanIntervalSeconds` | Seconds between two listings of the bucket                                           | `900`           |
+| `bucketUsage.serviceMonitor.enabled` | Create a ServiceMonitor for the exporter                                          | `true`          |
+| `bucketUsage.serviceMonitor.labels` | Extra labels on the ServiceMonitor                                                 | `{}`            |
 | `resources.limits.cpu`      | Container requested CPU                                                                    | `nil`           |
 | `resources.limits.memory`   | Container requested memory                                                                 | `nil`           |
 | `priorityClassName      `   | priorityClassName                                                                          | `""`            |

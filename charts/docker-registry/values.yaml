@@ -123,6 +123,25 @@ securityContext:
 
 priorityClassName: ""
 
+bucketUsage:
+  enabled: false
+  endpoint: ""
+  scanIntervalSeconds: 900
+  image:
+    repository: python
+    tag: 3.13-alpine
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 128Mi
+  serviceMonitor:
+    enabled: true
+    interval: 60s
+    labels: {}
+
 podDisruptionBudget: {}
   # maxUnavailable: 1
   # minAvailable: 2
