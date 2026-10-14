@@ -1,0 +1,5 @@
+apiVersion: v2
+name: bucket-usage
+description: Lists S3 buckets and exports their size as Prometheus metrics
+version: 0.1.0
+appVersion: "1.0"

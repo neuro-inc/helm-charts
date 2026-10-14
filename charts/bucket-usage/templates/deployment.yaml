@@ -1,0 +1,86 @@
+{{- if not .Values.buckets }}
+{{- fail "buckets must list at least one bucket" }}
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bucket-usage.fullname" . }}
+  labels:
+    {{- include "bucket-usage.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "bucket-usage.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "bucket-usage.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/script: {{ .Files.Get "files/bucket_usage.py" | sha256sum }}
+    spec:
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . | quote }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+      containers:
+        - name: bucket-usage
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "/app/bucket_usage.py"]
+          ports:
+            - name: metrics
+              containerPort: 9100
+          env:
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
+            - name: S3_ENDPOINT
+              value: {{ required "endpoint is required" .Values.endpoint | quote }}
+            - name: S3_REGION
+              value: {{ required "region is required" .Values.region | quote }}
+            - name: S3_BUCKETS
+              value: {{ $names := list }}{{ range .Values.buckets }}{{ $names = append $names (required "buckets[].name is required" .name) }}{{ end }}{{ join "," $names | quote }}
+            - name: SCAN_INTERVAL_SECONDS
+              value: {{ .Values.scanIntervalSeconds | quote }}
+            {{- range $i, $b := .Values.buckets }}
+            - name: S3_ACCESS_KEY_{{ $i }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "buckets[].secret.name is required" $b.secret.name }}
+                  key: {{ required "buckets[].secret.accessKeyKey is required" $b.secret.accessKeyKey }}
+            - name: S3_SECRET_KEY_{{ $i }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $b.secret.name }}
+                  key: {{ required "buckets[].secret.secretKeyKey is required" $b.secret.secretKeyKey }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: script
+              mountPath: /app
+              readOnly: true
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: script
+          configMap:
+            name: {{ include "bucket-usage.fullname" . }}
