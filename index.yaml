@@ -404,6 +404,16 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/apolo-vcluster-0.1.0/apolo-vcluster-0.1.0.tgz
     version: 0.1.0
+  bucket-usage:
+  - apiVersion: v2
+    appVersion: "1.0"
+    created: "2026-10-14T13:35:09.618280153Z"
+    description: Lists S3 buckets and exports their size as Prometheus metrics
+    digest: 1b33bd152decbe9c79bd46f7e387652512b05c52adf111ca90f186c03ccf51f2
+    name: bucket-usage
+    urls:
+    - https://github.com/neuro-inc/helm-charts/releases/download/bucket-usage-0.1.0/bucket-usage-0.1.0.tgz
+    version: 0.1.0
   docker-registry:
   - apiVersion: v1
     appVersion: 2.7.1
@@ -1800,4 +1810,4 @@ entries:
     urls:
     - https://github.com/neuro-inc/helm-charts/releases/download/thanos-0.3.23/thanos-0.3.23.tgz
     version: 0.3.23
-generated: "2026-09-25T09:30:59.533399123Z"
+generated: "2026-10-14T13:35:09.618426904Z"
