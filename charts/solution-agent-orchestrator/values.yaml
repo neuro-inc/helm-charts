@@ -1,0 +1,305 @@
+# Default values for solution-agent-orchestrator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Number of replicas
+replicaCount: 1
+
+# Image configuration - developers can specify the tag here
+image:
+  repository: ghcr.io/your-org/solution-agent-orchestrator
+  # Tag can be overridden during deployment: helm install --set image.tag=v1.2.3
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# Image pull secrets for private registries (e.g., GitHub Container Registry)
+# Create the secret first: kubectl create secret docker-registry ghcr-secret \
+#   --docker-server=ghcr.io \
+#   --docker-username=<GITHUB_USERNAME> \
+#   --docker-password=<GITHUB_TOKEN> \
+#   --docker-email=<EMAIL> \
+#   --namespace=<namespace>
+imagePullSecrets: []
+  # - name: ghcr-secret
+
+# Name override (optional)
+nameOverride: ""
+fullnameOverride: ""
+
+# Pod annotations
+podAnnotations: {}
+  # prometheus.io/scrape: "true"
+  # prometheus.io/port: "8000"
+
+# Pod labels
+podLabels: {}
+
+# Update strategy
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8000
+  targetPort: 8000
+  annotations: {}
+  # cloud.google.com/load-balancer-type: "Internal"
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: solution-agent-orchestrator.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+    # - secretName: solution-agent-orchestrator-tls
+    #   hosts:
+    #     - solution-agent-orchestrator.example.com
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Environment variables
+# REQUIRED variables (must be set):
+#   - API_JWT_SECRET
+#   - SWAGGER_USERNAME
+#   - SWAGGER_PASSWORD
+#   - UPWORK_CLIENT_ID
+#   - UPWORK_CLIENT_SECRET
+#   - UPWORK_USER_AGENT
+#   - WEBHOOK_SECRET
+#   - DATABASE_URL
+# OPTIONAL variables (have defaults or can be omitted):
+#   - WEBHOOK_PREVIOUS_SECRET
+#   - WEBHOOK_MAX_AGE_SECONDS (default: 120)
+#   - API_PREFIX (default: /api/v1)
+#   - UPWORK_OAUTH_TOKEN_URL
+#   - UPWORK_API_BASE_URL
+env: []
+  # Required variables
+  # - name: API_JWT_SECRET
+  #   value: "your-jwt-secret-here"
+  # - name: SWAGGER_USERNAME
+  #   value: "admin"
+  # - name: SWAGGER_PASSWORD
+  #   value: "secure-password"
+  # - name: UPWORK_CLIENT_ID
+  #   value: "your-upwork-client-id"
+  # - name: UPWORK_CLIENT_SECRET
+  #   value: "your-upwork-client-secret"
+  # - name: UPWORK_USER_AGENT
+  #   value: "your-user-agent-string"
+  # - name: WEBHOOK_SECRET
+  #   value: "your-webhook-secret"
+  # - name: DATABASE_URL
+  #   value: "postgresql://user:pass@host:5432/db"
+  # Optional variables
+  # - name: WEBHOOK_PREVIOUS_SECRET
+  #   value: "previous-webhook-secret"
+  # - name: WEBHOOK_MAX_AGE_SECONDS
+  #   value: "120"
+  # - name: API_PREFIX
+  #   value: "/api/v1"
+  # - name: UPWORK_OAUTH_TOKEN_URL
+  #   value: "https://www.upwork.com/ab/account-security/oauth2/token"
+  # - name: UPWORK_API_BASE_URL
+  #   value: "https://www.upwork.com/api"
+
+# Environment variables from secrets
+envFrom: []
+  # - secretRef:
+  #     name: app-secrets
+  # - configMapRef:
+  #     name: app-config
+
+# Secrets configuration
+secrets: {}
+  # database:
+  #   username: "admin"
+  #   password: "secretpassword"
+  # api_key: "your-api-key-here"
+
+# Existing secret to use (instead of creating one)
+existingSecret: ""
+# existingSecretKeyRef: []
+#   # - name: DATABASE_PASSWORD
+#   #   secretKeyRef:
+#   #     name: existing-secret
+#   #     key: db-password
+
+# Health checks
+livenessProbe:
+  enabled: true
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /ready
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Startup probe (for slow-starting applications)
+startupProbe:
+  enabled: false
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 30
+
+# Container command and args
+command: []
+  # - python
+args: []
+  # - app.py
+
+# Working directory
+workingDir: ""
+
+# Security context
+securityContext:
+  enabled: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+# Pod security context
+podSecurityContext:
+  enabled: true
+  fsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Volumes configuration
+volumes: []
+  # - name: config
+  #   configMap:
+  #     name: app-config
+  # - name: secrets
+  #   secret:
+  #     secretName: app-secrets
+  # - name: data
+  #   persistentVolumeClaim:
+  #     claimName: app-data
+
+# Volume mounts
+volumeMounts: []
+  # - name: config
+  #   mountPath: /app/config
+  #   readOnly: true
+  # - name: data
+  #   mountPath: /app/data
+
+# Persistent volume claim
+persistence:
+  enabled: false
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  storageClass: ""
+  # storageClass: "fast-ssd"
+  existingClaim: ""
+  # existingClaim: "my-existing-pvc"
+
+# Node selector
+nodeSelector: {}
+  # kubernetes.io/os: linux
+  # node-type: compute
+
+# Affinity rules
+affinity: {}
+  # podAntiAffinity:
+  #   preferredDuringSchedulingIgnoredDuringExecution:
+  #     - weight: 100
+  #       podAffinityTerm:
+  #         labelSelector:
+  #           matchExpressions:
+  #             - key: app
+  #               operator: In
+  #               values:
+  #                 - solution-agent-orchestrator
+  #         topologyKey: kubernetes.io/hostname
+
+# Tolerations
+tolerations: []
+  # - key: "key1"
+  #   operator: "Equal"
+  #   value: "value1"
+  #   effect: "NoSchedule"
+
+# Priority class
+priorityClassName: ""
+
+# Service account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+  # name: "solution-agent-orchestrator-sa"
+
+# Init containers
+initContainers: []
+  # - name: init-db
+  #   image: postgres:13
+  #   command: ['sh', '-c', 'until pg_isready -h db; do sleep 1; done']
+
+# Sidecar containers
+sidecars: []
+  # - name: log-shipper
+  #   image: fluent/fluent-bit:latest
+  #   volumeMounts:
+  #     - name: varlog
+  #       mountPath: /var/log
+
+# Extra volumes (for sidecars, etc.)
+extraVolumes: []
+  # - name: varlog
+  #   emptyDir: {}
+
+# Extra volume mounts (for sidecars, etc.)
+extraVolumeMounts: []
+  # - name: varlog
+  #   mountPath: /var/log
+
+# Lifecycle hooks
+lifecycle: {}
+  # preStop:
+  #   exec:
+  #     command: ["/bin/sh", "-c", "sleep 15"]
+
+# Termination grace period
+terminationGracePeriodSeconds: 30
+
