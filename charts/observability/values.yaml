@@ -381,7 +381,7 @@ alloy-logs:
           stage.decolorize {}
 
           stage.multiline {
-            firstline = "^\\S+.*"
+            firstline = "^(\\S|\\s+\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})"
             max_lines = 0
           }
 
